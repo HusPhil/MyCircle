@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+{% include 'navbar.html' %} <br>
+
+{% if profile %}
+	<h1> {{ profile.user.username }}'s Profile</h1> <br>
+
+	<strong>Friends:</strong>
+	{% for friend in profile.friend.all %}
+
+	{% if friend.user.username != user.username %}
+
+	<a href="{% url 'profile' friend.user.id %}"><p> @{{friend.user.username}}</p></a>
+
+	{% endif %}
+	
+	{% endfor %}
+
+
+	<strong>Friends of:</strong> 
+	{% for friend in profile.friend_of.all %}
+
+	{% if friend.user.username != user.username %}
+
+	<a href="{% url 'profile' friend.user.id %}"><p> @{{friend.user.username}}</p></a>
+
+	{% endif %}
+	
+	{% endfor %}
+
+
+{% endif %}
+
+
+
+{% endblock %}

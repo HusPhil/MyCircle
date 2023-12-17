@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+{% include 'navbar.html' %} <br>
+<h1>These are your friends:</h1>
+
+{% for friend in friends %}
+    <div >
+  		{{ friend.user.username }}
+	</div>
+	<div >
+  		{{ friend.user.email }}
+	</div>
+{% endfor %}
+
+{% endblock %}
