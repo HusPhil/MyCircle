@@ -9,4 +9,5 @@ urlpatterns = [
 
 	path('profile/<int:pk>', views.profile, name='profile'),
 	path('friends', views.friends, name='friends'),
+	path('messages', views.messages, name='messages'),
 ]

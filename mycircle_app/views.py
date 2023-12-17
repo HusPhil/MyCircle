@@ -98,3 +98,5 @@ def friends(request):
 	return redirect('sign_in')
 	
 
+def messages(request):
+	return render(request, 'messages.html')

@@ -6,24 +6,28 @@
 {% include 'navbar.html' %} <br>
 
 {% if profile %}
-	<h1> {{ profile.user.username }}'s Profile</h1> <br>
+
+<div class="container text-center">
+  <div class="row align-items-start">
+    <div class="col">
+    	<h1> {{ profile.user.username }}'s Profile</h1> <br>
+    </div>
+    <div class="col">
+
+		{% if user.id != profile.user.id %}
+			<button class="btn btn-primary">Message</button>
+		{% endif %}
+		
+    </div>
+  </div>
+</div>
+
+	
 
 	<strong>Friends:</strong>
 	{% for friend in profile.friend.all %}
 
-	{% if friend.user.username != user.username %}
-
-	<a href="{% url 'profile' friend.user.id %}"><p> @{{friend.user.username}}</p></a>
-
-	{% endif %}
-	
-	{% endfor %}
-
-
-	<strong>Friends of:</strong> 
-	{% for friend in profile.friend_of.all %}
-
-	{% if friend.user.username != user.username %}
+	{% if friend.user.username != profile.user.username %}
 
 	<a href="{% url 'profile' friend.user.id %}"><p> @{{friend.user.username}}</p></a>
 
