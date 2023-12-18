@@ -5,7 +5,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 
 from .forms import CreateUserForm, CreatePostForm
-from .models import Profile, Post
+from .models import Profile, Post, Message, ChatRoom
 
 # Create your views here.
 def home(request):
@@ -99,4 +99,20 @@ def friends(request):
 	
 
 def messages(request):
-	return render(request, 'messages.html')
+	chatrooms = request.user.rooms.all()
+
+	context = {
+		# 'messages': messages,
+		'chatrooms': chatrooms,
+	}
+	return render(request, 'messages.html', context)
+
+
+def view_convo(request, room_id):
+	chatrooms = request.user.rooms.all()
+	messages = Message.objects.filter(room_id=room_id)
+	context = {
+		'chatrooms': chatrooms,
+		'messages': messages,
+	}
+	return render(request, 'messages.html', context)
