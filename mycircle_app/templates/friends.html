@@ -6,13 +6,23 @@
 {% include 'navbar.html' %} <br>
 <h1>These are your friends:</h1>
 
+<strong>Friends:</strong>
+
+
 {% for friend in friends %}
     <div >
-  		{{ friend.user.username }}
+  		<a href="{% url 'profile' friend.user.id %}"><p> @{{friend.user.username}}</p></a>
 	</div>
 	<div >
   		{{ friend.user.email }}
 	</div>
 {% endfor %}
 
+<form method="post" action="{% url 'create_circle' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create Circle</button>
+</form>
+
 {% endblock %}
+

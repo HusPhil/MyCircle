@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Post
+from .models import Post, Circle, Profile
 
 
 class CreatePostForm(forms.ModelForm):
@@ -20,13 +20,15 @@ class CreatePostForm(forms.ModelForm):
 
 			
 
+class CreateCircleForm(forms.ModelForm):
+    class Meta:
+        model = Circle
+        fields = ['name', 'members']
 
-
-
-	# user = models.ForeignKey(User, related_name="post", on_delete=models.DO_NOTHING)
-	# body = models.TextField(blank=True)
-	
-	# created_at = models.DateTimeField(auto_now_add=True)
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        current_user_profile = Profile.objects.get(user=user)
+        self.fields['members'].queryset = current_user_profile.friend.exclude(user=user)
 
 
 class CreateUserForm(UserCreationForm):

@@ -4,8 +4,8 @@ from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 
-from .forms import CreateUserForm, CreatePostForm
-from .models import Profile, Post, Message, ChatRoom
+from .forms import CreateUserForm, CreatePostForm, CreateCircleForm
+from .models import Profile, Post, Message, ChatRoom, Circle
 
 # Create your views here.
 def home(request):
@@ -30,7 +30,7 @@ def home(request):
 			'posts': posts
 		}
 		return render(request, 'home.html', context)
-	messages.error(request,'Please log in before you access this page')
+	# messages.error(request,'Please log in before you access this page')
 	return redirect('sign_in')
 
 def sign_up(request):
@@ -41,9 +41,9 @@ def sign_up(request):
 
 		if form.is_valid():
 			form.save()
-			messages.success(request,'SUCCESSFUL')
+			# messages.success(request,'SUCCESSFUL')
 			return redirect('sign_in')
-		messages.error(request,'NOT SUCCESSFUL')
+		# messages.error(request,'NOT SUCCESSFUL')
 	context = {
 		'form': form
 	}
@@ -87,11 +87,14 @@ def profile(request, pk):
 
 def friends(request):
 	if request.user.is_authenticated:
+		form = CreateCircleForm(request.user)
 		current_user_profile = request.user.profile 
 		friends = current_user_profile.friend.exclude(user=request.user)
 		context = {
 			'user': request.user,
-			'friends': friends
+			'friends': friends,
+			'profile': profile,
+			'form': form,
 		}
 		return render(request, 'friends.html', context)
 	messages.error(request,'Please log in before you access this page')
@@ -99,20 +102,65 @@ def friends(request):
 	
 
 def messages(request):
-	chatrooms = request.user.rooms.all()
+    user = request.user
+    circles = Circle.objects.filter(members=user)
+    print(circles)
 
-	context = {
-		# 'messages': messages,
-		'chatrooms': chatrooms,
-	}
-	return render(request, 'messages.html', context)
+    chat_rooms = []
+    for circle in circles:
+        circle_chat_rooms = circle.chat_room
+        chat_rooms.append(circle_chat_rooms)
+
+
+    context = {
+        # 'messages': messages,
+        'chatrooms': chat_rooms,
+    }
+    return render(request, 'messages.html', context)
+
 
 
 def view_convo(request, room_id):
-	chatrooms = request.user.rooms.all()
-	messages = Message.objects.filter(room_id=room_id)
-	context = {
-		'chatrooms': chatrooms,
-		'messages': messages,
-	}
-	return render(request, 'messages.html', context)
+    user = request.user
+    circles = Circle.objects.filter(members=user)
+    print(circles)
+
+    chat_rooms = []
+    for circle in circles:
+        circle_chat_rooms = circle.chat_room
+        chat_rooms.append(circle_chat_rooms)
+    
+    messages = Message.objects.filter(room_id=room_id)
+    print(room_id)
+
+    p_room_id = room_id
+
+    context = {
+        'chatrooms': chat_rooms,
+        'messages': messages,
+        'p_room_id': p_room_id,
+    }
+    return render(request, 'messages.html', context)
+
+
+def create_circle(request):
+    if request.method == 'POST':
+        form = CreateCircleForm(request.user, request.POST)
+        if form.is_valid():
+            circle = form.save(commit=False)
+            circle.save()
+            profiles = form.cleaned_data['members']
+            for profile in profiles:
+                circle.members.add(profile.user)
+            circle.members.add(request.user)
+            circle.save()  # Save the Circle instance after adding members
+            
+            if not circle.name:
+                circle.name = ", ".join([user.username for user in circle.members.all()])
+                circle.save()
+            
+            return redirect('friends')
+    else:
+        form = CreateCircleForm(request.user)
+    
+    return render(request, 'friends.html', {'form': form})

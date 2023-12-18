@@ -11,4 +11,5 @@ urlpatterns = [
 	path('friends', views.friends, name='friends'),
 	path('messages', views.messages, name='messages'),
 	path('view_convo/<uuid:room_id>', views.view_convo, name='view_convo'),
+	path('create_circle', views.create_circle, name='create_circle'),
 ]

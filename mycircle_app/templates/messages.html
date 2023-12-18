@@ -22,12 +22,10 @@
 	    	{% for room in chatrooms reversed %}
 
 	    	<div>
-	    		{% for rm_user in room.users.all %}
-		    		{% if rm_user.username != user.username %}
-		    		<a href="{% url 'view_convo' room.id %}"><h2>Convo with: {{rm_user}} </h2></a>
+	    		
+		    		<a href="{% url 'view_convo' room.id %}"><h2>Convo with: {{room.circle.name}} </h2></a>
 		    			<br>
-		    		{% endif %}
-	    		{% endfor %}
+		    	
 	    	</div>
 			
 				{% endfor %}
@@ -37,16 +35,26 @@
 				    <div class="row mt-4">
 				        <div class="col">
 				            <div class="alert alert-warning text-center">
-				            		 {% if messages %}
-											        <h2>CONVERSATION {{ messages.0.room.name }}</h2>
-											   {% endif %}
+				            		{% if not p_room_id %}
+				            			<h2>No Convo Selected</h2>
+				            		{%else%}
+										{% for room in chatrooms reversed %}
+						            		{% if p_room_id == room.id %}
+												<h2>{{ room.circle.name }}</h2>
+											{% endif %}
+									{% endfor %}
+									{%endif%}
 				            </div>
 				        </div>
 				    </div>
 				    <div class="row">
 				        <div class="col">
 				            <div class="overflow-auto border rounded p-3" style="max-height: 300px;">
-				                {% if not messages %}
+				            	{% if not p_room_id %}
+				            		<div class="alert alert-danger">
+				                        <strong>Please Select a Coversation</strong>
+				                    </div>
+				                {% elif not messages %}
 				                    <div class="alert alert-secondary">
 				                        <strong>No conversation</strong>
 				                    </div>
