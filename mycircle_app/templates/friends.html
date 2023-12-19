@@ -11,7 +11,7 @@
 
 {% for friend in friends %}
     <div >
-  		<a href="{% url 'profile' friend.user.id %}"><p> @{{friend.user.username}}</p></a>
+  		<a href="{% url 'profile' friend.user.profile.id %}"><p> @{{friend.user.username}}</p></a>
 	</div>
 	<div >
   		{{ friend.user.email }}

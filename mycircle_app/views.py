@@ -1,8 +1,11 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
+from django.core.serializers import serialize
+import json
+from django.core.serializers.json import DjangoJSONEncoder
 
 from .forms import CreateUserForm, CreatePostForm, CreateCircleForm
 from .models import Profile, Post, Message, ChatRoom, Circle
@@ -75,7 +78,7 @@ def sign_out(request):
 
 def profile(request, pk):
 	if request.user.is_authenticated:
-		profile = Profile.objects.get(user_id=pk)
+		profile = Profile.objects.get(id=pk)
 		context = {'profile': profile}
 
 		return render(request, 'profile.html', context)
@@ -102,28 +105,32 @@ def friends(request):
 	
 
 def messages(request):
+	
     user = request.user
     circles = Circle.objects.filter(members=user)
-    print(circles)
 
     chat_rooms = []
     for circle in circles:
         circle_chat_rooms = circle.chat_room
         chat_rooms.append(circle_chat_rooms)
 
+    
 
     context = {
-        # 'messages': messages,
+       
         'chatrooms': chat_rooms,
+       
     }
     return render(request, 'messages.html', context)
 
 
 
+# Create your action functions here
+
 def view_convo(request, room_id):
     user = request.user
     circles = Circle.objects.filter(members=user)
-    print(circles)
+
 
     chat_rooms = []
     for circle in circles:
@@ -131,14 +138,12 @@ def view_convo(request, room_id):
         chat_rooms.append(circle_chat_rooms)
     
     messages = Message.objects.filter(room_id=room_id)
-    print(room_id)
-
-    p_room_id = room_id
+    m_room = ChatRoom.objects.get(id=room_id)
 
     context = {
         'chatrooms': chat_rooms,
         'messages': messages,
-        'p_room_id': p_room_id,
+        'room': m_room,
     }
     return render(request, 'messages.html', context)
 
@@ -164,3 +169,68 @@ def create_circle(request):
         form = CreateCircleForm(request.user)
     
     return render(request, 'friends.html', {'form': form})
+
+def send_message(request):
+	if request.method == 'POST':
+		room_id = request.POST.get('room_id')
+		m_content = request.POST.get('message')
+		m_room = ChatRoom.objects.get(id=room_id)
+		
+		# print(m_room.circle.name)
+		new_message = Message.objects.create(
+			room=m_room,
+			sender=request.user,
+			content=m_content
+		)
+		new_message.save()
+
+		message = "hi"
+
+		return JsonResponse({'message': message})
+	return JsonResponse({'message': 'Error: Invalid request method'})
+
+def get_messages(request, room_id):
+	m_room = ChatRoom.objects.get(id=room_id)
+	message_contents = Message.objects.filter(room=m_room).values('content')
+	message_senders = Message.objects.filter(room=m_room).values('sender')
+
+	print(type(message_senders[0].get('sender')),"::", str(message_senders[0]))
+
+	context = {
+		'messages': list(message_contents)
+	}
+
+	return JsonResponse(context)
+
+def get_messages(request, room_id):
+	m_room = ChatRoom.objects.get(id=room_id)
+	messages = Message.objects.filter(room=m_room)
+
+
+	serialized_messages = []
+	for message_obj in messages:
+		serialized_message = {
+			'room': message_obj.room_id,
+			'sender': message_obj.sender.username if message_obj.sender else None,
+			'content': message_obj.content,
+			'timestamp': message_obj.timestamp
+		}
+		serialized_messages.append(serialized_message)
+
+	print(type(serialized_messages))
+
+	serialized_messages = json.dumps(serialized_messages, cls=DjangoJSONEncoder)
+
+
+
+	return JsonResponse({'messages': serialized_messages})
+
+    
+
+ # m_room = ChatRoom.objects.get(id=room_id)
+ #    messages = Message.objects.filter(room=m_room)
+
+ #    # Serialize messages to JSON
+ #    serialized_messages = serialize('json', messages)
+
+ #    return JsonResponse({'messages': serialized_messages})

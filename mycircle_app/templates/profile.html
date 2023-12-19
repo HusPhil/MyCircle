@@ -14,9 +14,7 @@
     </div>
     <div class="col">
 
-		{% if user.id != profile.user.id %}
-			<button class="btn btn-primary">Message</button>
-		{% endif %}
+
 		
     </div>
   </div>
@@ -29,8 +27,30 @@
 
 	{% if friend.user.username != profile.user.username %}
 
-	<a href="{% url 'profile' friend.user.id %}"><p> @{{friend.user.username}}</p></a>
+			{% if friend.user.username == request.user.username %}
+			<div class="container">
+			
+					<a href="{% url 'profile' friend.user.profile.id %}" class="link-primary undecorated"> <p> You</p></a>
+				
+			</div>
 
+	
+
+			{% else %}
+			<div class="container">
+				<div class="row align-items-start">
+				<div class="col">
+					<a href="{% url 'profile' friend.user.profile.id %}" class="link-primary undecorated"><p> @{{friend.user.username}}</p></a>
+				</div>
+
+				<div class="col">	
+					<a href=""><button class="btn btn-primary">UNFRIEND</button></a>	
+				</div>
+				</div>
+				
+			</div>
+			{% endif %}
+			
 	{% endif %}
 	
 	{% endfor %}

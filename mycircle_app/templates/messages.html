@@ -35,12 +35,12 @@
 				    <div class="row mt-4">
 				        <div class="col">
 				            <div class="alert alert-warning text-center">
-				            		{% if not p_room_id %}
+				            		{% if not room.id %}
 				            			<h2>No Convo Selected</h2>
 				            		{%else%}
-										{% for room in chatrooms reversed %}
-						            		{% if p_room_id == room.id %}
-												<h2>{{ room.circle.name }}</h2>
+										{% for n_room in chatrooms reversed %}
+						            		{% if room.id == n_room.id %}
+												<h2>{{ n_room.circle.name }}</h2>
 											{% endif %}
 									{% endfor %}
 									{%endif%}
@@ -50,7 +50,7 @@
 				    <div class="row">
 				        <div class="col">
 				            <div class="overflow-auto border rounded p-3" style="max-height: 300px;">
-				            	{% if not p_room_id %}
+				            	{% if not room.id %}
 				            		<div class="alert alert-danger">
 				                        <strong>Please Select a Coversation</strong>
 				                    </div>
@@ -60,11 +60,8 @@
 				                    </div>
 				                {% else %}
 				                    {% for message in messages %}
-				                        <div class="alert alert-secondary mb-3">
-				                            <strong>Sender: {{ message.sender }}</strong>
-				                            <p>{{ message.content|linebreaks }}</p>
-				                            <small>{{ message.timestamp }}</small>
-				                            <small>{{ message.room.name }}</small>
+				                        <div id="chat-messages">
+				                            
 				                        </div>
 				                    {% endfor %}
 				                {% endif %}
@@ -73,14 +70,18 @@
 				    </div>
 				    <div class="row mt-3">
 				        <div class="col">
-								    <form>
-								        <div class="input-group">
-								            <textarea class="form-control" rows="3" placeholder="Type your message"></textarea>
-								            <div class="input-group-append">
-								                <button type="submit" class="btn btn-primary">Send</button>
-								            </div>
-								        </div>
-								    </form>
+				        			{% if room.id %}
+								    <form id="message-form">
+									    {% csrf_token %}
+									    <div class="input-group">
+									    	<input type="hidden" name="room_id" id="room_id" value="{{ room.id }}">
+									        <textarea  name="message" id="message-input" class="form-control" rows="3" placeholder="Type your message"></textarea>
+									        <div class="input-group-append">
+									            <button type="submit" id="send-message-btn" class="btn btn-primary">Send</button>
+									        </div>
+									    </div>
+									</form>
+									{% endif %}
 								</div>
 
 				    </div>
@@ -91,8 +92,111 @@
 
 
 		</div>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script>
+	    $(document).ready(function () {
+	        // Handle form submission
+	        $('#message-form').submit(function (event) {
+	            event.preventDefault(); // Prevent default form submission
+	            // var message = ; // Get message from textarea
+
+	            // Send message via AJAX
+	            $.ajax({
+	                type: 'POST',
+	                url: 'send_message', // Replace with your Django view URL to handle message sending
+	                data: {
+	                    message: $('#message-input').val(),
+	                    room_id: $('#room_id').val(),
+	                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+	                },
+	                success: function (response) {
+	                    $('#message-input').val(''); // Clear the textarea after sending
+	                    // Display the sent message in the chat
+	                    $('#chat-messages').append($('<div>').text(message));
+	                },
+	                error: function (error) {
+	                    console.error('Error sending message:', error);
+	                }
+	            });
+	        });
+	    });
+	</script>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // Function to fetch messages
+    function fetchMessages() {
+        $.ajax({
+            url: 'get_messages/{{room.id}}',  // Your server endpoint to get messages
+            method: 'GET',
+           
+            success: function(response){
+                // Parse the JSON string received in the response
+                const parsedMessages = JSON.parse(response.messages);
+
+                // console.log(parsedMessages); // Print the parsed messages array
+
+                // Iterate through each message in the parsed messages array
+                $('#chat-messages').empty();
+                parsedMessages.forEach(function(message){
+                    // Log the entire message object
+                    console.log(message);
+
+                    var formattedContent = message.content.replace(/\n/g, '<br>')
+
+                    var message_body = 
+                	'<div class="alert alert-secondary mb-3">' +
+				    '<strong>@' + message.sender + '</strong>' +
+				    '<p>' + formattedContent + '</p>' +
+				    '<small>' + message.timestamp + '</small>' +
+				    '</div>';
+
+                    $('#chat-messages').append(message_body);
+                    
+                    // Use message data in your HTML or other functionalities
+                    // ...
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching messages:', error);
+            }
+        });
+    }
+
+    // Fetch messages every 5 seconds (adjust as needed)
+    setInterval(fetchMessages, 1000); // Fetch messages every 5 seconds (5000 milliseconds)
+</script>
 
 
 
 
 {% endblock %}
+
+success: function(data) {
+                // Display messages in the message area
+                $('#chat-messages').empty(); // Clear previous messages
+                data.messages.forEach(function(message) {
+                	console.log(message.content)
+
+                	var message_body = 
+                	'<div class="alert alert-secondary mb-3"> <strong>Sender:' +message.sender+ ' </strong> <p>' + message.content + ' </p> </div>'
+
+                    $('#chat-messages').append(message_body);
+
+                    var messageData = JSON.parse(message.fields);
+
+                    console.log(messageData); // Print the parsed message data
+                    // Access the message data fields as needed (for example)
+                    console.log(messageData.content); 
+                });
+            },
