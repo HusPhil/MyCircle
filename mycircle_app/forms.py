@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from .models import Post, Circle, Profile
 
 
+
 class CreatePostForm(forms.ModelForm):
 
 	class Meta(object):
@@ -18,8 +19,6 @@ class CreatePostForm(forms.ModelForm):
 		}
 		exclude = ('user',)
 
-			
-
 class CreateCircleForm(forms.ModelForm):
     class Meta:
         model = Circle
@@ -29,7 +28,6 @@ class CreateCircleForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         current_user_profile = Profile.objects.get(user=user)
         self.fields['members'].queryset = current_user_profile.friend.exclude(user=user)
-
 
 class CreateUserForm(UserCreationForm):
 	class Meta():
@@ -41,6 +39,7 @@ class CreateUserForm(UserCreationForm):
 			'password2',
 		]
 
-
-
+class FriendRequestForm(forms.Form):
+	user_id = forms.CharField(widget=forms.TextInput, required=True, label="Enter User ID")
+	# message = forms.CharField(widget=forms.TextInput, required=False)
 

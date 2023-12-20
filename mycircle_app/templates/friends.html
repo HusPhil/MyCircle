@@ -4,9 +4,10 @@
 {% block content %}
 
 {% include 'navbar.html' %} <br>
-<h1>These are your friends:</h1>
+<h1 style="text-align: center;">These are your friends:</h1><hr>
 
-<strong>Friends:</strong>
+<div class="container">
+<strong >Friends:</strong>
 
 
 {% for friend in friends %}
@@ -17,12 +18,48 @@
   		{{ friend.user.email }}
 	</div>
 {% endfor %}
+</div>
+<hr>
 
-<form method="post" action="{% url 'create_circle' %}">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Create Circle</button>
-</form>
+<div class="container">
+    {% for message in messages %}
+    <div class="alert alert-info" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+<strong>Add Friends:</strong>
+    <form method="post" action="{% url 'send_friend_request' %}">
+        {% csrf_token %}
+        {{ fr_form.as_p }}
+        <button type="submit">Add Friend</button>
+    </form>
+
+<hr>
+<div class="container">
+    <strong>Sent friend Requests:</strong>
+    {% for sent_fr in sent_fr_list %}
+    <p>To: {{ sent_fr.receiver }}<a href="{% url 'delete_friend_request' sent_fr.id %}"><button>Cancel</button></a> </p>
+    {% endfor %}
+    
+</div>
+<div class="container">
+    <strong>Received friend requests:</strong>
+    {% for received_fr in received_fr_list %}
+    <p>From: {{ received_fr.sender }} <a href="{% url 'accept_friend_request' received_fr.id %}"><button>Accept</button></a> </p>
+    {% endfor %}
+</div>
+</div>
+
+<hr>
+
+<div class="container">    
+    <form method="post" action="{% url 'create_circle' %}">
+        {% csrf_token %}
+        {{ circle_form.as_p }}
+        <button type="submit">Create Circle</button>
+    </form>
+</div>
+<br><br><br><br><br><br>
 
 {% endblock %}
 

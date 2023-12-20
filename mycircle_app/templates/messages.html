@@ -49,7 +49,7 @@
 				    </div>
 				    <div class="row">
 				        <div class="col">
-				            <div class="overflow-auto border rounded p-3" style="max-height: 300px;">
+				            <div class="overflow-auto border rounded p-3" style="max-height: 300px;" id="scrolling-cont">
 				            	{% if not room.id %}
 				            		<div class="alert alert-danger">
 				                        <strong>Please Select a Coversation</strong>
@@ -103,75 +103,147 @@
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 	<script>
-	    $(document).ready(function () {
-	        // Handle form submission
-	        $('#message-form').submit(function (event) {
-	            event.preventDefault(); // Prevent default form submission
-	            // var message = ; // Get message from textarea
+	function scrollToBottom() {
+    const scrollingContainer = document.getElementById('scrolling-cont');
+    scrollingContainer.scrollTop = scrollingContainer.scrollHeight;
+	}
 
-	            // Send message via AJAX
-	            $.ajax({
-	                type: 'POST',
-	                url: 'send_message', // Replace with your Django view URL to handle message sending
-	                data: {
-	                    message: $('#message-input').val(),
-	                    room_id: $('#room_id').val(),
-	                    'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
-	                },
-	                success: function (response) {
-	                    $('#message-input').val(''); // Clear the textarea after sending
-	                    // Display the sent message in the chat
-	                    $('#chat-messages').append($('<div>').text(message));
-	                },
-	                error: function (error) {
-	                    console.error('Error sending message:', error);
-	                }
-	            });
-	        });
-	    });
+$(document).ready(function () {
+    // Handle form submission
+    $('#message-form').submit(function (event) {
+        event.preventDefault(); // Prevent default form submission
+        var message = $('#message-input').val(); // Get message from textarea
+
+        // Send message via AJAX
+        $.ajax({
+            type: 'POST',
+            url: 'send_message', // Replace with your Django view URL to handle message sending
+            data: {
+                message: message,
+                room_id: $('#room_id').val(),
+                'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val()
+            },
+            success: function (response) {
+                console.log("Message sent successfully");
+                $('#message-input').val(''); // Clear the textarea after sending
+
+               
+
+                // Scroll to the bottom after sending the message
+                // scrollToBottom();
+            },
+            error: function (error) {
+                console.error('Error sending message:', error);
+            }
+        });
+    });
+});
+
 	</script>
 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     // Function to fetch messages
+    let locker_bool = true
+    function scrollToBottom() {
+
+    const scrollingContainer = document.getElementById('scrolling-cont');
+    const scrollThreshold = scrollingContainer.scrollHeight - scrollingContainer.clientHeight - 50; // 20% from the bottom
+
+    console.log(scrollThreshold+"::::"+scrollingContainer.scrollTop+"::::"+scrollingContainer.clientHeight)
+
+    if (scrollingContainer.scrollTop >= scrollThreshold) {
+        scrollingContainer.scrollTop = scrollingContainer.scrollHeight;
+    }
+}
+
+	function message_appended(messages){
+		// Parse the JSON string received in the response
+                const parsedMessages = JSON.parse(messages);
+
+                // Iterate through each message in the parsed messages array
+                $('#chat-messages').empty();
+                parsedMessages.forEach(function(message){
+
+                    var formattedContent = message.content.replace(/\n/g, '<br>');
+
+					var formattedContent = message.content.replace(/\n/g, '<br>');
+
+					const dateString = message.timestamp;
+					const date = new Date(dateString);
+					const today = new Date();
+
+					if (
+					  date.getDate() === today.getDate() &&
+					  date.getMonth() === today.getMonth() &&
+					  date.getFullYear() === today.getFullYear()
+					) {
+					  const hours = date.getHours();
+					  const amPM = hours >= 12 ? 'PM' : 'AM';
+					  const formattedHours = hours % 12 || 12;
+
+					  const formattedTime = `Today at ${String(formattedHours).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')} ${amPM}`;
+					  var formattedDateTime = formattedTime + ' UTC';
+					} else {
+					  const hours = date.getHours();
+					  const amPM = hours >= 12 ? 'PM' : 'AM';
+					  const formattedHours = hours % 12 || 12;
+
+					  formattedDateTime = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(formattedHours).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')} ${amPM} UTC`;
+					}
+
+
+
+                    var message_body = 
+                	'<div class=" container alert alert-secondary mb-3 message-container" >' +
+				    '<strong>@' + message.sender + '</strong>' +
+				    '<p>' + formattedContent + '</p>' +
+				    '<small>' + formattedDateTime + '</small>' +
+				    '</div>';
+
+                    $('#chat-messages').append(message_body);
+
+                    return true        
+                });
+
+                
+	}
     function fetchMessages() {
         $.ajax({
             url: 'get_messages/{{room.id}}',  // Your server endpoint to get messages
             method: 'GET',
            
             success: function(response){
-                // Parse the JSON string received in the response
-                const parsedMessages = JSON.parse(response.messages);
+                message_appended(response.messages)
 
-                // console.log(parsedMessages); // Print the parsed messages array
+                 scrollToBottom()
 
-                // Iterate through each message in the parsed messages array
-                $('#chat-messages').empty();
-                parsedMessages.forEach(function(message){
-                    // Log the entire message object
-                    console.log(message);
+                if (!locker_bool) {
+                }
+               
 
-                    var formattedContent = message.content.replace(/\n/g, '<br>')
+                locker_bool = true
 
-                    var message_body = 
-                	'<div class="alert alert-secondary mb-3">' +
-				    '<strong>@' + message.sender + '</strong>' +
-				    '<p>' + formattedContent + '</p>' +
-				    '<small>' + message.timestamp + '</small>' +
-				    '</div>';
-
-                    $('#chat-messages').append(message_body);
-                    
-                    // Use message data in your HTML or other functionalities
-                    // ...
-                });
+                
+                
             },
             error: function(xhr, status, error) {
                 console.error('Error fetching messages:', error);
             }
         });
+
     }
+
+    $('#send-message-btn').on('click', function() {
+    // ... (your code to send a new message)
+    	console.log(locker_bool)
+    	locker_bool = false
+    	fetchMessages()
+		
+    // After sending a message, trigger the fetchMessages function
+
+	});
 
     // Fetch messages every 5 seconds (adjust as needed)
     setInterval(fetchMessages, 1000); // Fetch messages every 5 seconds (5000 milliseconds)

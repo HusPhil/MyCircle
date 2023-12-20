@@ -43,7 +43,6 @@ class ChatRoom(models.Model):
     def __str__(self):
         return self.name or f"Chat Room {self.id}"
 
-
 def create_chatroom(sender, instance, created, **kwargs):
     if created:
         # Create a ChatRoom associated with the new Circle
@@ -60,7 +59,6 @@ class Message(models.Model):
 
 	def __str__(self):
 		return f"{self.sender.username} - {self.timestamp}"
-
 
 class Profile(models.Model):
 	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -83,3 +81,19 @@ def create_profile(sender, instance, created, **kwargs):
 
 post_save.connect(create_profile, sender=User)
 
+class FriendRequest(models.Model):
+	sender = models.ForeignKey(User, related_name='friend_requests_sent', on_delete=models.CASCADE)
+	receiver = models.ForeignKey(User, related_name='friend_requests_received', on_delete=models.CASCADE)
+	created_at = models.DateTimeField(auto_now_add=True)
+
+	class Meta:
+		unique_together = ('sender', 'receiver')
+
+
+# class FriendRequest(models.Model):
+#     from_user = models.ForeignKey(User, related_name='friend_requests_sent', on_delete=models.CASCADE)
+#     to_user = models.ForeignKey(User, related_name='friend_requests_received', on_delete=models.CASCADE)
+#     created_at = models.DateTimeField(auto_now_add=True)
+
+#     class Meta:
+#         unique_together = ('from_user', 'to_user')

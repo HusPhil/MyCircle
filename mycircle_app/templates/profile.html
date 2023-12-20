@@ -10,7 +10,8 @@
 <div class="container text-center">
   <div class="row align-items-start">
     <div class="col">
-    	<h1> {{ profile.user.username }}'s Profile</h1> <br>
+    	<h1> {{ profile.user.username }}'s Profile</h1>
+    	<small> ID: {{ profile.id }}</small> <br>
     </div>
     <div class="col">
 
@@ -21,16 +22,24 @@
 </div>
 
 	
-
+<div class="container">
 	<strong>Friends:</strong>
 	{% for friend in profile.friend.all %}
 
 	{% if friend.user.username != profile.user.username %}
 
 			{% if friend.user.username == request.user.username %}
-			<div class="container">
 			
-					<a href="{% url 'profile' friend.user.profile.id %}" class="link-primary undecorated"> <p> You</p></a>
+			
+				
+			<div class="container">
+				<div class="row align-items-start">
+				<div class="col">
+					
+					<a href="{% url 'profile' friend.user.profile.id %}" class="link-primary undecorated"><p>You</p></a>
+				</div>
+
+				</div>
 				
 			</div>
 
@@ -40,13 +49,36 @@
 			<div class="container">
 				<div class="row align-items-start">
 				<div class="col">
-					<a href="{% url 'profile' friend.user.profile.id %}" class="link-primary undecorated"><p> @{{friend.user.username}}</p></a>
+					<a href="{% url 'profile' friend.user.profile.id %}" class="link-primary undecorated">
+						<p>@{{friend.user.username}}</p></a>
 				</div>
 
-				<div class="col">	
-					<a href=""><button class="btn btn-primary">UNFRIEND</button></a>	
+
+				        {% if friend.user.profile in user.profile.friend.all %}
+				        
+				        {% csrf_token %}	
+				        		<div class="col">    
+				                <a href="{% url 'unfriend' friend.user.profile.id %}">
+				                	<button class="btn btn-primary" type="">UNFRIEND</button>
+				                </a>    
+				            </div>
+				        
+				        {% else %}
+				        <form method="post" action="{% url 'send_friend_request' %}">
+				        {% csrf_token %}	
+				        		<div class="col">    
+				                <a href="">
+				        					<input type="hidden" name="receiver_user_id" value="{{ friend.user.profile.id }}">
+				                	<button class="btn btn-primary" type="submit">ADD FRIEND</button>
+				                </a>    
+				            </div>
+				        </form>
+
+
+				        {% endif %}
+				
 				</div>
-				</div>
+				
 				
 			</div>
 			{% endif %}
@@ -54,10 +86,9 @@
 	{% endif %}
 	
 	{% endfor %}
-
+</div>
 
 {% endif %}
-
 
 
 {% endblock %}
