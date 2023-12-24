@@ -89,6 +89,16 @@ class FriendRequest(models.Model):
 	class Meta:
 		unique_together = ('sender', 'receiver')
 
+class ProfilePicture(models.Model):
+	user = models.ForeignKey(Profile, related_name="profile_picture", on_delete=models.DO_NOTHING)
+	img = models.ImageField(default='blank_img.png', upload_to='uploaded_profile_pics/')
+	uploaded_at = models.DateTimeField(auto_now_add=True)
+	
+	def __str__(self):
+		return str(self.pk)
+
+
+
 
 # class FriendRequest(models.Model):
 #     from_user = models.ForeignKey(User, related_name='friend_requests_sent', on_delete=models.CASCADE)

@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Post, Circle, Profile
+from .models import Post, Circle, Profile, ProfilePicture
 
 
 
@@ -43,3 +43,7 @@ class FriendRequestForm(forms.Form):
 	user_id = forms.CharField(widget=forms.TextInput, required=True, label="Enter User ID")
 	# message = forms.CharField(widget=forms.TextInput, required=False)
 
+class UploadProfilePic(forms.ModelForm):
+	class Meta:
+		model = ProfilePicture
+		fields = ('img',)

@@ -6,7 +6,7 @@ from django.core.serializers import serialize
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 
-from .forms import CreateUserForm, CreatePostForm, CreateCircleForm, FriendRequestForm
+from .forms import CreateUserForm, CreatePostForm, CreateCircleForm, FriendRequestForm, UploadProfilePic
 from .models import Profile, Post, Message, ChatRoom, Circle, FriendRequest
 from django.contrib import messages
 
@@ -76,11 +76,17 @@ def sign_out(request):
 
 def profile(request, pk):
 	if request.user.is_authenticated:
+		profile_pic_form = UploadProfilePic(request.POST or None, request.FILES or None)
+
+		if profile_pic_form.is_valid():
+			profile_pic_form.save()
+			return JsonResponse({'message': 'works'})
 		
 		profile = Profile.objects.get(id=pk)
 		user_friends = Profile.objects.get(user=request.user)
 
 		context = {
+			'profile_pic_form': profile_pic_form,
 			'profile': profile,
 			'user_friends': user_friends,
 			'result': None,

@@ -16,7 +16,7 @@ SECRET_KEY = 'django-insecure-h3)z2wa!43(d&rq_4b(mlpgttopc#k8@99@x%pp&fa^m2l^ct@
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    # '192.168.8.112'
+    '*'
 ]
 
 
@@ -113,7 +113,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = 'media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-STATICFILES_DIRS = (os.path.join(BASE_DIR, '/static'),)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'mycircle_app/static'),)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
