@@ -27,9 +27,11 @@
     <div class="row py-4">
         <div class="col-lg-6 mx-auto">
             <div class="input-group mb-3 px-4 py-2 rounded-pill bg-white shadow-sm">
-                <form action="" id="image-form" style="padding-top:10px;">
+                <form method="POST" action="" id="image-form" style="padding-top:10px;">
                     {% csrf_token %}
-                    {{form.as_p}}
+                    <!-- {{profile_pic_form.as_p}} -->
+
+					<input type="file" name="{{ profile_pic_form.name }}" id="id_file" class="form-control file-input">
                 </form>
             </div>
             <div id="alert-box"></div>
@@ -53,14 +55,6 @@ body {
 }
 </style>  
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.js"></script>
-<script>
-	const image = document.getElementById('image');
-	const cropper = new Cropper(image, {
-		aspectRatio: 0,
-	})
-	
-</script>
 
 {% endif %}
 

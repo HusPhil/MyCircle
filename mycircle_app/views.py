@@ -77,21 +77,21 @@ def sign_out(request):
 def profile(request, pk):
 	if request.user.is_authenticated:
 		profile_pic_form = UploadProfilePic(request.POST or None, request.FILES or None)
-
+		profile = Profile.objects.get(id=pk)
 		if profile_pic_form.is_valid():
-			profile_pic_form.save()
+			profile_pic = profile_pic_form.save(commit=False)
+			profile_pic.user = request.user.profile
+			profile_pic.save()
+
+			
 			return JsonResponse({'message': 'works'})
 		
-		profile = Profile.objects.get(id=pk)
-		user_friends = Profile.objects.get(user=request.user)
 
 		context = {
 			'profile_pic_form': profile_pic_form,
 			'profile': profile,
-			'user_friends': user_friends,
-			'result': None,
 		}
-
+		
 		return render(request, 'profile.html', context)
 	messages.error(request,'Please log in before you access this page')
 	return redirect('sign_in')
