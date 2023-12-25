@@ -5,41 +5,110 @@
 
 
 {% if profile %}
-
+<div class="greet-cont">
+    {% if profile.user.username == request.user.username %}
+        <h1>Your Profile</h1>
+    {% else %}
+        <h1>@{{profile.user.username}}</h1>
+    {% endif %}
+</div>
 <div class="profile-cont item">
-	<div>
-		<div><img class="profile-bg" src="{% static 'test_img/bg-test.jpg' %}" alt=""></div>
-		<div><img class="profile-dp" src="{% static 'test_img/avatar-5.jpg' %}" alt=""></div>
+    <div class="profile-images-cont">
+        <div>
+            {% if profile.user.username == request.user.username %}
+            <button type="button" class="btn profile-modal-btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                <div class="sliding-message"><h4>Click here if you want to change this image</h4></div>
+            </button>
+            {% else %}
+            <br>
+            {% endif %}
+            <img class="profile-bg" src="{{ profile.profile_picture.img.url }}" alt="">
+        </div>
+		<div class="profile-dp-cont"><img class="profile-dp" src="..\media\blank_img.png" alt=""></div>
 	</div>
-	<div>
-		<h5>Hello there! @YourUsername</h5>
-		<p>Friends</p>
-		<p>Circles</p>
+    <div>
+        <h3>@{{profile.user.username}}</h3>
+        <p class="txt-bio">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis, odio.</p><br><br>
+    </div>
+	<div class="profile-info-cont">
+		<div>
+            <h4>Friends</h4>
+            <p>{{ profile.friend.count }}</p>
+        </div>
+		<div>
+            <h4>Circles</h4>
+            <p>{{ circles.count }}</p>
+        </div>
 	</div>
-</div> <br><br><br><br><br><br><br><br><br><br>
+</div> 
 
 
-<div class="container py-5">
-    <header class="text-white text-center">
-        <h1 class="display-4">Python Django Image Crop and Upload Crop Image with javascript ajax</h1>
-    </header>
- 
-    <div class="row py-4">
-        <div class="col-lg-6 mx-auto">
-            <div class="input-group mb-3 px-4 py-2 rounded-pill bg-white shadow-sm">
-                <form method="POST" action="" id="image-form" style="padding-top:10px;">
-                    {% csrf_token %}
-                    <!-- {{profile_pic_form.as_p}} -->
 
-					<input type="file" name="{{ profile_pic_form.name }}" id="id_file" class="form-control file-input">
-                </form>
+
+
+
+
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content item">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Changing your background picture</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+            <!-- CHANGING-PHOTO GUI -->
+            <form method="POST" action="{% url 'profile' request.user.profile.id %}" id="image-form" style="padding-top:10px;">
+                {% csrf_token %}
+                <div class="choose-photo-cont">
+                    <label for="id_file" class="file-label hover-item">
+                        <p>Choose Photo</p>
+                        <input type="file" name="{{ profile_pic_form.name }}" id="id_file" class="">
+                    </label>
+                </div>
+            </form>
             </div>
             <div id="alert-box"></div>
             <div class="image-area mb-3"><div id="image-box"></div></div>
-            <button class="btn btn-primary mt-3 not-visible" id="confirm-btn">Confirm</button>
-        </div>
+           <button class="btn btn-primary mt-3 not-visible" id="confirm-btn">Save Changes</button>
+
+      </div>
+    </div>
+  </div>
+
+<div class="item profile-modal">
+    <div>
+        <h3>Do you want to change your background picture?</h3>
+    </div>
+    <hr>
+    <div>
+        <button>Choose Photo</button>
+        <button>Cancel</button>
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <style>
 #upload {
     opacity: 0;
@@ -52,6 +121,9 @@ body {
     min-height: 100vh;
     background-color: #7b9a75;
     background-image: linear-gradient(147deg, #7b9a75 0%, #d7dde8 100%);
+}
+.not-visible {
+    display: none;
 }
 </style>  
 

@@ -7,7 +7,7 @@ import json
 from django.core.serializers.json import DjangoJSONEncoder
 
 from .forms import CreateUserForm, CreatePostForm, CreateCircleForm, FriendRequestForm, UploadProfilePic
-from .models import Profile, Post, Message, ChatRoom, Circle, FriendRequest
+from .models import Profile, Post, Message, ChatRoom, Circle, FriendRequest, ProfilePicture
 from django.contrib import messages
 
 # Create your views here.
@@ -78,23 +78,61 @@ def profile(request, pk):
 	if request.user.is_authenticated:
 		profile_pic_form = UploadProfilePic(request.POST or None, request.FILES or None)
 		profile = Profile.objects.get(id=pk)
+		circles = Circle.objects.filter(members=profile.user)
 		if profile_pic_form.is_valid():
-			profile_pic = profile_pic_form.save(commit=False)
-			profile_pic.user = request.user.profile
-			profile_pic.save()
-
+			try:
+				if ProfilePicture.objects.filter(user_profile=profile).exists():
+					existing_profile_picture = ProfilePicture.objects.get(user_profile=profile)
+					existing_profile_picture.delete()
+					print('meron')
+				
+				else:
+					pass
 			
-			return JsonResponse({'message': 'works'})
-		
+			except Profile.DoesNotExist:
+				print('Profile does not exist!')
+
+			try:
+				profile_pic = profile_pic_form.save(commit=False)
+				profile_pic.user_profile = request.user.profile
+				profile_pic.save()
+				print('wala')
+
+				return JsonResponse({'message': 'works'})
+			except Exception as e:
+				print(f'Error: {e}')  # Log the exception for debugging purposes
+				messages.error(request, 'Error occurred while uploading profile picture.')
+			
 
 		context = {
 			'profile_pic_form': profile_pic_form,
 			'profile': profile,
+			'circles': circles,
 		}
-		
+
 		return render(request, 'profile.html', context)
 	messages.error(request,'Please log in before you access this page')
 	return redirect('sign_in')
+
+#  try:
+#                 # Check if a ProfilePicture exists for the current Profile and delete it
+#                 existing_profile_picture = ProfilePicture.objects.get(user_profile=profile)
+#                 existing_profile_picture.delete()
+#                 print('Existing ProfilePicture deleted.')
+                
+#             except ProfilePicture.DoesNotExist:
+#                 pass  # No existing ProfilePicture found
+            
+#             try:
+#                 profile_pic = profile_pic_form.save(commit=False)
+#                 profile_pic.user_profile = request.user.profile
+#                 profile_pic.save()
+#                 print('New ProfilePicture saved.')
+                
+#                 return JsonResponse({'message': 'works'})
+            
+            
+        
 
 def friends(request):
 	if request.user.is_authenticated:

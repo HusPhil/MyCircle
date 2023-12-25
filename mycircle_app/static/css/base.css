@@ -9,17 +9,17 @@
     --input-field-color: #546060;
 
     --fnt-main-color: #FAF4D3;
-    --fnt-main-size: .9rem;
+    --fnt-main-size: 1.2rem;
     
 }
 
+* {
+    font-family: 'Varela Round', sans-serif;
+}
 
 
 /* NAVIGATION BAR */
 
-p {
-    font-size: var(--fnt-main-size);
-}
 
 .nav-bar {
     
@@ -264,6 +264,7 @@ hr {
 
 #upload_image{
     display: none;
+    background-color: #009637;
 }
 
 .btn-cont {
@@ -395,6 +396,9 @@ hr {
     background-image: url(../icons/share-icon.png);
 }
 
+p {
+    font-size: var(--fnt-main-size);
+}
 
 
 

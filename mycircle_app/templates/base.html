@@ -9,7 +9,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/profile.css' %}">
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
 
     <!-- jquery -->
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
@@ -17,12 +19,13 @@
     <!-- cropper -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropper/4.1.0/cropper.min.css">
-
+    
     <style>
       .not-visible {
           display: none;
       }
     </style>
+    
   </head>
   <body>
 
@@ -50,72 +53,8 @@
       <div class="row"> asdasdsa</div>
     </div>
     
-    <script>
-      const alertBox = document.getElementById('alert-box')
-      const imageBox = document.getElementById('image-box')
-      const imageForm = document.getElementById('image-form')
-      const confirmBtn = document.getElementById('confirm-btn')
-      const input = document.getElementById('id_file')
-       
-      const csrf = document.getElementsByName('csrfmiddlewaretoken')
-       
-      input.addEventListener('change', ()=>{
-          alertBox.innerHTML = ""
-          confirmBtn.classList.remove('not-visible')
-          const img_data = input.files[0]
-          const url = URL.createObjectURL(img_data)
-       
-          imageBox.innerHTML = `<img src="${url}" id="image" width="700px">`
-          var $image = $('#image')
-          console.log("IMAGE DATA HERE")
-          console.log($image)
-       
-          $image.cropper({
-              aspectRatio: 16 / 9,
-              crop: function(event) {
-                  console.log(event.detail.x);
-                  console.log(event.detail.y);
-                  console.log(event.detail.width);
-                  console.log(event.detail.height);
-                  console.log(event.detail.rotate);
-                  console.log(event.detail.scaleX);
-                  console.log(event.detail.scaleY);
-              }
-          });
-           
-          var cropper = $image.data('cropper');
-          confirmBtn.addEventListener('click', ()=>{
-              cropper.getCroppedCanvas().toBlob((blob) => {
-                  console.log('confirmed')
-                  const fd = new FormData();
-                  fd.append('csrfmiddlewaretoken', csrf[0].value)
-                  fd.append('img', blob, 'my-image.png');
-       
-                  $.ajax({
-                      type:'POST',
-                      url: imageForm.action,
-                      enctype: 'multipart/form-data',
-                      data: fd,
-                      success: function(response){
-                          console.log('success', response)
-                          alertBox.innerHTML = `<div class="alert alert-success" role="alert">
-                                                  Successfully saved and cropped the selected image
-                                              </div>`
-                      },
-                      error: function(error){
-                          console.log('error', error)
-                          alertBox.innerHTML = `<div class="alert alert-danger" role="alert">
-                                                  Ups...something went wrong
-                                              </div>`
-                      },
-                      cache: false,
-                      contentType: false,
-                      processData: false,
-                  })
-              })
-          })
-      })
-      </script>
+    <!-- pages-scripts -->
+    <script src="{% static 'js/profile.js' %}"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
   </body>

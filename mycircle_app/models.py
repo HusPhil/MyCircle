@@ -90,7 +90,7 @@ class FriendRequest(models.Model):
 		unique_together = ('sender', 'receiver')
 
 class ProfilePicture(models.Model):
-	user = models.ForeignKey(Profile, related_name="profile_picture", on_delete=models.DO_NOTHING)
+	user_profile = models.OneToOneField('Profile', on_delete=models.CASCADE, related_name='profile_picture', null=True)
 	img = models.ImageField(default='blank_img.png', upload_to='uploaded_profile_pics/')
 	uploaded_at = models.DateTimeField(auto_now_add=True)
 	
