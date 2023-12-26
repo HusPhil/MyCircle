@@ -396,15 +396,35 @@ hr {
     background-image: url(../icons/share-icon.png);
 }
 
+
+.change-icon-btn {
+    width: fit-content;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background-color: var(--bg-items);
+    transition: all 200ms ease-in-out;
+    aspect-ratio: 1/1;
+    margin: 0;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.change-icon-btn:hover {
+    background-color: var(--secondary-color);
+}
+.change-icon-img {
+    aspect-ratio: 1/1;
+    width: 20px;
+
+}
+
 p {
     font-size: var(--fnt-main-size);
 }
 
-
-
-
-
-
+.display-hidden {
+    display: none !important;
+}
 
 @media screen and (max-width: 1020px) {
     .sub-item-cont {

@@ -14,21 +14,29 @@
 </div>
 <div class="profile-cont item">
     <div class="profile-images-cont">
-        <div>
+        <div class="profile-bg-cont">
             {% if profile.user.username == request.user.username %}
-            <button type="button" class="btn profile-modal-btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                <div class="sliding-message"><h4>Click here if you want to change this image</h4></div>
-            </button>
+                <button class="change-icon-btn" type="button"  data-bs-toggle="modal" data-bs-target="#change_background_pic">
+                    <img class="change-icon-img" src="{% static 'icons/change-icon.png' %}" alt="">
+                </button>
             {% else %}
-            <br>
             {% endif %}
+            
             <img class="profile-bg" src="{{ profile.profile_picture.img.url }}" alt="">
         </div>
-		<div class="profile-dp-cont"><img class="profile-dp" src="..\media\blank_img.png" alt=""></div>
+        
+		<div class="profile-dp-cont">
+            <img class="profile-dp" src="{{ profile.profile_picture.img.url }}" alt="">
+            {% if profile.user.username == request.user.username %}
+            <button class="change-icon-btn" type="button"  data-bs-toggle="modal" data-bs-target="#change_profile_pic">
+                <img class="change-icon-img" src="{% static 'icons/change-icon.png' %}" alt="">
+            </button>
+            {% endif %}
+        </div>
 	</div>
     <div>
         <h3>@{{profile.user.username}}</h3>
-        <p class="txt-bio">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis, odio.</p><br><br>
+        <div class="txt-bio-cont"><p class="txt-bio">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis, odio.</p></div>
     </div>
 	<div class="profile-info-cont">
 		<div>
@@ -49,45 +57,37 @@
 
 
   
-  <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <!-- Modal (Profile Pic) -->
+  <div class="modal fade" id="change_profile_pic" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content item">
+      <div class="modal-content item ">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Changing your background picture</h1>
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Changing your Profile Picture</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body ">
 
             <!-- CHANGING-PHOTO GUI -->
-            <form method="POST" action="{% url 'profile' request.user.profile.id %}" id="image-form" style="padding-top:10px;">
+            <form id="frm-change-profile-pic">
                 {% csrf_token %}
                 <div class="choose-photo-cont">
-                    <label for="id_file" class="file-label hover-item">
-                        <p>Choose Photo</p>
-                        <input type="file" name="{{ profile_pic_form.name }}" id="id_file" class="">
+                    <label for="choose-profile-pic-btn" class="hover-item">
+                        <p>Select a Profile Picture</p>
+                        <input type="file" name="{{ profile_pic_form.name }}" id="choose-profile-pic-btn" class="display-hidden">
                     </label>
                 </div>
             </form>
             </div>
-            <div id="alert-box"></div>
-            <div class="image-area mb-3"><div id="image-box"></div></div>
-           <button class="btn btn-primary mt-3 not-visible" id="confirm-btn">Save Changes</button>
+            <div class="alert-box"></div>
 
-      </div>
+            <div class="img-area-cont">
+                <div class="image-area mb-3 chosen-pic-box"></div>
+            </div>
+            <button class="btn btn-primary mt-3 save-changes-btn" disabled>Save Changes</button>
     </div>
   </div>
 
-<div class="item profile-modal">
-    <div>
-        <h3>Do you want to change your background picture?</h3>
-    </div>
-    <hr>
-    <div>
-        <button>Choose Photo</button>
-        <button>Cancel</button>
-    </div>
-</div>
+<br><br><br><br><br><br><br><br><br><br>
 
 
 
@@ -113,18 +113,20 @@
 #upload {
     opacity: 0;
 }
+
+.img-area-cont {
+    display: flex;
+    justify-content: center;
+}
+
 .image-area {
     border: 2px dashed rgba(255, 255, 255, 0.7);
     padding: 1rem;
+    min-width: 50%;
+    max-width: fit-content;
+    /* overflow: hidden; */
 }
-body {
-    min-height: 100vh;
-    background-color: #7b9a75;
-    background-image: linear-gradient(147deg, #7b9a75 0%, #d7dde8 100%);
-}
-.not-visible {
-    display: none;
-}
+
 </style>  
 
 

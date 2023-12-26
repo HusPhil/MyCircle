@@ -16,47 +16,18 @@
 .profile-images-cont {
     display: flex;
     flex-direction: column;
-    margin-top: -1.2rem;
     transition: all 200ms ease-in-out !important;
 }
-.profile-images-cont:hover {
-    margin-top: 0rem;
-    transition: all 1s ease-in-out;
-}
 
-.profile-images-cont button{
-    width: 100%;
-    justify-self: center;
+
+.profile-bg-cont {
+    display: flex;
+    flex-direction: column;
     border-radius: 15px 15px 50% 50%;
-    background: none !important;
-    border: none !important;
-    text-align: center;
-    /* display: none; */
-    transition: all 1s ease-in-out !important;
 }
-.sliding-message {
-    height: 0px;
-    border-radius: 10px;
-    overflow: hidden;
-    transition: all 0.3s ease-out;
-    margin: 0;
-    
-}
-.profile-images-cont:hover button .sliding-message{
-    display: block;
-    height: fit-content;
-    padding-top: 10px;
-    background-color: var(--input-field-color);
-}
-.profile-images-cont:hover button {
-    display: block;
-    transition: all 1s ease-in-out;
-}
-
-
-
 
 .profile-bg {
+    transition: all .45s ease-in-out;
     border-radius: 15px 15px 50% 50%;
     width: 100%;
     height: 350px;
@@ -68,18 +39,54 @@
     box-shadow: 10px 10px 30px -5px rgba(0,0,0,0.75);
 }
 
+.profile-images-cont .change-icon-btn {
+    margin-top: 15px;
+    margin-bottom: -60px;
+    margin-right: 20px;
+    align-self: flex-end;
+    opacity: 0; 
+    
+    z-index: 10;
+    transition: all .5s ease-in-out;
+}
+
+.profile-bg-cont:hover .change-icon-btn, .profile-images-cont .change-icon-btn:hover {
+    opacity: 1;
+}
+
+
+
 .profile-dp-cont {
-    margin-top: -8rem;
-    display: flex;
-    justify-content: center;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+
+    border-radius: 50%;
+    margin-top: -120px;
+    width: fit-content;
+    height: fit-content;
+}
+
+.profile-dp-cont .change-icon-btn {
+    position: absolute;
+    align-self: center;
+    opacity: 0;
+    transform: translateX(-50%);
+    left: 50%;
+    bottom: 85px;
+    transition: all 0.5s ease-in-out;
+    
+}
+
+.profile-dp-cont:hover .change-icon-btn, .profile-dp-cont .change-icon-btn:hover {
+    opacity: 1;
 }
 
 .profile-dp {
     aspect-ratio: 1/1;
     border-radius: 50%;
-    border: 8px solid var(--bg-items);
+    border: 10px solid var(--bg-items);
     width: 200px;
-
 }
 
 .profile-info-cont {
@@ -92,15 +99,59 @@
     text-align: center;
 }
 
+.txt-bio-cont {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
 .txt-bio {
-    left: 50%;
-    transform: translateX(50%);
-    max-width: 50%;
+    max-width: 75%;
     border-radius: 10px;
     border: 2px solid var(--accent-color);
     font-size: 1rem;
     padding: 10px;
 }
+
+/* MODAL */
+
+.choose-photo-cont {
+    display: flex; 
+    justify-content: center;
+}
+label[for="choose-profile-pic-btn"] {
+    padding: 12px 10px 0px 10px; 
+    border-radius: 10px;
+    width: fit-content;
+    transition: all .5s ease-in-out;
+    
+}
+.hover-item:hover, .save-changes-btn:hover {
+    color: var(--secondary-color);
+    background-color: var(--input-field-color) !important; 
+    cursor: pointer;
+    transform: scale(0.9);
+}
+.modal-content {
+    color: var(--fnt-main-color);
+}
+
+.profile-modal h3 {
+    color: var(--fnt-main-color);
+}
+
+.save-changes-btn {
+    background: none;
+    border: none;
+    border-radius: 10px;
+    background-color: var(--input-field-color);
+}
+
+.save-changes-btn:disabled {
+    background-color: var(--input-field-color);
+}
+
+
 
 @media screen and (max-width: 1020px) {
     .profile-bg {
@@ -111,56 +162,10 @@
         width: 150px;
     
     }
+    .sliding-message {
+        margin-top: -175px;
+    }
 }
-
-/* MODAL */
-#id_file {
-    display: none;
-    
-}
-.choose-photo-cont {
-    display: flex; 
-    justify-content: center;
-}
-label[for="id_file"] {
-    padding: 12px 10px 0px 10px; 
-    border-radius: 10px;
-    width: fit-content;
-    transition: all .5s ease-in-out;
-    
-}
-.hover-item:hover, #confirm-btn:hover {
-    color: var(--secondary-color);
-    background-color: var(--input-field-color) !important; 
-    cursor: pointer;
-    transform: scale(0.9);
-}
-.modal-content {
-    color: var(--fnt-main-color);
-}
-
-.profile-bg + .btn {
-    background-color: rgba(24, 113, 22, 0.668) !important;
-}
-
-.profile-bg:hover + .profile-modal-btn .sliding-message {
-    height: 100px;
-}
-
-.profile-modal h3 {
-    color: var(--fnt-main-color);
-}
-
-#confirm-btn {
-    background: none;
-    border: none;
-    border-radius: 10px;
-}
-
-
-
-
-
 
 @media screen and (max-width: 300px) {
     .profile-dp {
@@ -168,4 +173,8 @@ label[for="id_file"] {
         width: 100px;
     
     }
+    
 }
+
+
+

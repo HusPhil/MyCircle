@@ -47,8 +47,7 @@ def create_chatroom(sender, instance, created, **kwargs):
     if created:
         # Create a ChatRoom associated with the new Circle
         chat_room = ChatRoom.objects.create(circle=instance)
-        chat_room.name = f"Chat Room for {instance}"
-        
+        chat_room.name = f"Chat Room for {instance}"     
 post_save.connect(create_chatroom, sender=Circle)
 
 class Message(models.Model):
@@ -78,7 +77,6 @@ def create_profile(sender, instance, created, **kwargs):
 
 		user_profile.friend.set([instance.profile.id])
 		user_profile.save()
-
 post_save.connect(create_profile, sender=User)
 
 class FriendRequest(models.Model):
@@ -96,6 +94,37 @@ class ProfilePicture(models.Model):
 	
 	def __str__(self):
 		return str(self.pk)
+
+def delete_profile_imgfile(sender, instance, **kwargs):
+    instance.img.delete()
+pre_delete.connect(delete_profile_imgfile, sender=ProfilePicture)
+
+class BackgroundPicture(models.Model):
+	user_profile = models.OneToOneField('Profile', on_delete=models.CASCADE, related_name='background_picture', null=True)
+	img = models.ImageField(default='blank_img.png', upload_to='uploaded_background_pics/')
+	uploaded_at = models.DateTimeField(auto_now_add=True)
+	
+	def __str__(self):
+		return str(self.pk)
+
+def delete_background_imgfile(sender, instance, **kwargs):
+    instance.img.delete()
+pre_delete.connect(delete_background_imgfile, sender=ProfilePicture)
+
+
+
+
+
+
+
+
+# class ProfilePicture(models.Model):
+# 	user_profile = models.OneToOneField('Profile', on_delete=models.CASCADE, related_name='profile_picture', null=True)
+# 	img = models.ImageField(default='blank_img.png', upload_to='uploaded_profile_pics/')
+# 	uploaded_at = models.DateTimeField(auto_now_add=True)
+	
+# 	def __str__(self):
+# 		return str(self.pk)
 
 
 
