@@ -6,7 +6,7 @@ from django.core.serializers import serialize
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 
-from .forms import CreateUserForm, CreatePostForm, CreateCircleForm, FriendRequestForm, UploadProfilePic
+from .forms import CreateUserForm, CreatePostForm, CreateCircleForm, FriendRequestForm, UploadProfilePic, UploadBackgroundPic
 from .models import Profile, Post, Message, ChatRoom, Circle, FriendRequest, ProfilePicture
 from django.contrib import messages
 
@@ -77,6 +77,7 @@ def sign_out(request):
 def profile(request, pk):
 	if request.user.is_authenticated:
 		profile_pic_form = UploadProfilePic(request.POST or None, request.FILES or None)
+		background_pic_form = UploadBackgroundPic(request.POST or None, request.FILES or None)
 		profile = Profile.objects.get(id=pk)
 		circles = Circle.objects.filter(members=profile.user)
 		if profile_pic_form.is_valid():
@@ -84,7 +85,7 @@ def profile(request, pk):
 				if ProfilePicture.objects.filter(user_profile=profile).exists():
 					existing_profile_picture = ProfilePicture.objects.get(user_profile=profile)
 					existing_profile_picture.delete()
-					print('meron')
+					
 				
 				else:
 					pass
@@ -102,6 +103,9 @@ def profile(request, pk):
 			except Exception as e:
 				print(f'Error: {e}')  # Log the exception for debugging purposes
 				messages.error(request, 'Error occurred while uploading profile picture.')
+		
+		if background_pic_form.is_valid():
+			print("GAGAWA NG BG PIC OBJ")
 			
 
 		context = {

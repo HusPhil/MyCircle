@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Post, Circle, Profile, ProfilePicture
+from .models import Post, Circle, Profile, ProfilePicture, BackgroundPicture
 
 
 
@@ -46,4 +46,9 @@ class FriendRequestForm(forms.Form):
 class UploadProfilePic(forms.ModelForm):
 	class Meta:
 		model = ProfilePicture
+		fields = ('img',)
+
+class UploadBackgroundPic(forms.ModelForm):
+	class Meta:
+		model = BackgroundPicture
 		fields = ('img',)

@@ -60,32 +60,68 @@
   <!-- Modal (Profile Pic) -->
   <div class="modal fade" id="change_profile_pic" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content item ">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Changing your Profile Picture</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body ">
-
-            <!-- CHANGING-PHOTO GUI -->
-            <form id="frm-change-profile-pic">
-                {% csrf_token %}
-                <div class="choose-photo-cont">
-                    <label for="choose-profile-pic-btn" class="hover-item">
-                        <p>Select a Profile Picture</p>
-                        <input type="file" name="{{ profile_pic_form.name }}" id="choose-profile-pic-btn" class="display-hidden">
-                    </label>
-                </div>
-            </form>
+        <div class="modal-content item ">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Changing your Profile Picture</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <div class="modal-body ">
+                <!-- CHANGING-PHOTO GUI -->
+                <form id="frm-change-profile-pic">
+                    {% csrf_token %}
+                    <div class="choose-photo-cont">
+                        <label for="choose-profile-pic-btn" class="hover-item">
+                            <p>Select a Profile Picture</p>
+                            <input type="file" name="{{ profile_pic_form.name }}" id="choose-profile-pic-btn" class="display-hidden">
+                        </label>
+                    </div>
+                </form>
+                <!-- Closing the modal-body div here -->
+            </div>
+            <!-- alert-box and img-area-cont are siblings of modal-body -->
             <div class="alert-box"></div>
-
             <div class="img-area-cont">
                 <div class="image-area mb-3 chosen-pic-box"></div>
             </div>
+            <!-- Save Changes button is also a sibling of modal-body -->
             <button class="btn btn-primary mt-3 save-changes-btn" disabled>Save Changes</button>
+        </div>
     </div>
-  </div>
+</div>
+
+  <!-- Modal (Background Pic) -->
+  <div class="modal fade" id="change_background_pic" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content item ">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Changing your Background Picture</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body ">
+                <!-- CHANGING-PHOTO GUI -->
+                <form id="frm-change-background-pic">
+                    {% csrf_token %}
+                    <div class="choose-photo-cont">
+                        <label for="choose-background-pic-btn" class="hover-item">
+                            <p>Select a Background Picture</p>
+                            <input type="file" name="{{ background_pic_form.name }}" id="choose-background-pic-btn" class="display-hidden">
+                        </label>
+                    </div>
+                </form>
+                <!-- Closing the modal-body div here -->
+            </div>
+            <!-- alert-box and img-area-cont are siblings of modal-body -->
+            <div class="alert-box"></div>
+            <div class="img-area-cont">
+                <div class="image-area mb-3 chosen-pic-box"></div>
+            </div>
+            <!-- Save Changes button is also a sibling of modal-body -->
+            <button class="btn btn-primary mt-3 save-changes-btn" disabled>Save Changes</button>
+        </div>
+    </div>
+</div>
+
+  
 
 <br><br><br><br><br><br><br><br><br><br>
 
