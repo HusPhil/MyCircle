@@ -108,7 +108,6 @@
 .txt-bio {
     max-width: 75%;
     border-radius: 10px;
-    border: 2px solid var(--accent-color);
     font-size: 1rem;
     padding: 10px;
 }
@@ -151,8 +150,33 @@ label[for="choose-profile-pic-btn"] {
     background-color: var(--input-field-color);
 }
 
+/* CIRCLES */
 
+.circles-cont {
+    display: flex;
+    justify-content: space-around;
 
+    margin-top: 20px;
+    margin-bottom: 0px;
+}
+
+.circles-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-family: var(--fnt-main-style);
+    font-size: var(--fnt-main-size);
+
+    padding: 5px;
+    text-align: center;
+    width: 100px;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    background-color: var(--secondary-color);
+    border: 5px solid var(--bg-primary);
+}
+ 
 @media screen and (max-width: 1020px) {
     .profile-bg {
         height: 200px;

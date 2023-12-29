@@ -52,3 +52,6 @@ class UploadBackgroundPic(forms.ModelForm):
 	class Meta:
 		model = BackgroundPicture
 		fields = ('img',)
+		labels = {
+			'img': "Upload background image",
+		}

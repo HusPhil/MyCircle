@@ -7,7 +7,7 @@ import json
 from django.core.serializers.json import DjangoJSONEncoder
 
 from .forms import CreateUserForm, CreatePostForm, CreateCircleForm, FriendRequestForm, UploadProfilePic, UploadBackgroundPic
-from .models import Profile, Post, Message, ChatRoom, Circle, FriendRequest, ProfilePicture
+from .models import Profile, Post, Message, ChatRoom, Circle, FriendRequest, ProfilePicture, BackgroundPicture
 from django.contrib import messages
 
 # Create your views here.
@@ -74,48 +74,145 @@ def sign_out(request):
 	messages.error(request,'Please log in before you access this page')
 	return redirect('sign_in')
 
-def profile(request, pk):
-	if request.user.is_authenticated:
-		profile_pic_form = UploadProfilePic(request.POST or None, request.FILES or None)
-		background_pic_form = UploadBackgroundPic(request.POST or None, request.FILES or None)
-		profile = Profile.objects.get(id=pk)
-		circles = Circle.objects.filter(members=profile.user)
-		if profile_pic_form.is_valid():
-			try:
-				if ProfilePicture.objects.filter(user_profile=profile).exists():
-					existing_profile_picture = ProfilePicture.objects.get(user_profile=profile)
-					existing_profile_picture.delete()
+# def profile(request, pk):
+# 	if request.user.is_authenticated:
+# 		profile_pic_form = UploadProfilePic(request.POST or None, request.FILES or None)
+# 		background_pic_form = UploadBackgroundPic(request.POST or None, request.FILES or None)
+# 		profile = Profile.objects.get(id=pk)
+# 		circles = Circle.objects.filter(members=profile.user)
+
+# 		print('profile_pic_form' in request.FILES)
+
+# 		if profile_pic_form.is_valid():
+			
+			# try:
+			# 	if ProfilePicture.objects.filter(user_profile=profile).exists():
+			# 		existing_profile_picture = ProfilePicture.objects.get(user_profile=profile)
+			# 		existing_profile_picture.delete()
 					
 				
-				else:
-					pass
+			# 	else:
+			# 		pass
 			
-			except Profile.DoesNotExist:
-				print('Profile does not exist!')
+			# except Profile.DoesNotExist:
+			# 	print('Profile does not exist!')
 
-			try:
-				profile_pic = profile_pic_form.save(commit=False)
-				profile_pic.user_profile = request.user.profile
-				profile_pic.save()
-				print('wala')
+			# try:
+			# 	profile_pic = profile_pic_form.save(commit=False)
+			# 	profile_pic.user_profile = request.user.profile
+			# 	profile_pic.save()
+				
 
-				return JsonResponse({'message': 'works'})
-			except Exception as e:
-				print(f'Error: {e}')  # Log the exception for debugging purposes
-				messages.error(request, 'Error occurred while uploading profile picture.')
+			# 	return JsonResponse({'message': 'works'})
+			# except Exception as e:
+			# 	print(f'Error: {e}')  # Log the exception for debugging purposes
+			# 	messages.error(request, 'Error occurred while uploading profile picture.')
 		
-		if background_pic_form.is_valid():
-			print("GAGAWA NG BG PIC OBJ")
+# 		if background_pic_form.is_valid():
+# 			print("test here!0\n" * 10)
+# 			print("GAGAWA NG BG PIC OBJ")
+			
+
+# 		context = {
+# 			'profile_pic_form': profile_pic_form,
+# 			'background_pic_form': background_pic_form,
+# 			'profile': profile,
+# 			'circles': circles,
+# 		}
+
+# 		return render(request, 'profile.html', context)
+# 	messages.error(request,'Please log in before you access this page')
+# 	return redirect('sign_in')
+
+def profile(request, pk):
+	if request.user.is_authenticated:
+		profile = Profile.objects.get(id=pk)
+		circles = Circle.objects.filter(members=profile.user)
+		posts = Post.objects.filter(user=profile.user)
+		
+		profile_pic_form = UploadProfilePic()
+		background_pic_form = UploadBackgroundPic()
+		create_post_form = CreatePostForm()
+
+		if request.method == 'POST':
+			print(request.POST)
+			profile_pic_form = UploadProfilePic(request.POST or None, request.FILES or None)
+			profile_img_file_exist = any(file.name == 'profile_img.png' for file in request.FILES.getlist('img'))
+			
+			background_pic_form = UploadBackgroundPic(request.POST or None, request.FILES or None)
+			background_img_file_exist = any(file.name == 'background_img.png' for file in request.FILES.getlist('img'))
+
+			create_post_form = CreatePostForm(request.POST, request.FILES)
+
+			if profile_pic_form.is_valid() and profile_img_file_exist:
+				print("profile")
+				try:
+					if ProfilePicture.objects.filter(user_profile=profile).exists():
+						existing_profile_picture = ProfilePicture.objects.get(user_profile=profile)
+						existing_profile_picture.delete()
+						
+					
+					else:
+						pass
+				
+				except Profile.DoesNotExist:
+					print('Profile does not exist!')
+
+				try:
+					profile_pic = profile_pic_form.save(commit=False)
+					profile_pic.user_profile = request.user.profile
+					profile_pic.save()
+					
+
+					return JsonResponse({'message': 'works'})
+				except Exception as e:
+					print(f'Error: {e}')  # Log the exception for debugging purposes
+					messages.error(request, 'Error occurred while uploading profile picture.')
+
+
+			elif background_pic_form.is_valid() and background_img_file_exist:
+				print("background")
+
+				try:
+					if BackgroundPicture.objects.filter(user_profile=profile).exists():
+						existing_background_picture = BackgroundPicture.objects.get(user_profile=profile)
+						existing_background_picture.delete()
+						
+				except Profile.DoesNotExist:
+					print('Profile does not exist!')
+
+				try:
+					background_pic = background_pic_form.save(commit=False)
+					background_pic.user_profile = request.user.profile
+					background_pic.save()
+					
+
+					return JsonResponse({'message': 'works'})
+				except Exception as e:
+					print(f'Error: {e}')  # Log the exception for debugging purposes
+					messages.error(request, 'Error occurred while uploading profile picture.')
+		
+			elif create_post_form.is_valid():
+				print('post')
+				post = create_post_form.save(commit=False)
+				post.user = request.user
+				post.save()
+				
+				return redirect(f'/profile/{pk}')
 			
 
 		context = {
 			'profile_pic_form': profile_pic_form,
+			'background_pic_form': background_pic_form,
+			'create_post_form': create_post_form,
 			'profile': profile,
 			'circles': circles,
+			'posts': posts,
 		}
 
 		return render(request, 'profile.html', context)
-	messages.error(request,'Please log in before you access this page')
+	
+	messages.error(request, 'Please log in before you access this page')
 	return redirect('sign_in')
 
 #  try:

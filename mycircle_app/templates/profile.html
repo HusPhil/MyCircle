@@ -3,7 +3,6 @@
 
 {% block content %}
 
-
 {% if profile %}
 <div class="greet-cont">
     {% if profile.user.username == request.user.username %}
@@ -22,7 +21,7 @@
             {% else %}
             {% endif %}
             
-            <img class="profile-bg" src="{{ profile.profile_picture.img.url }}" alt="">
+            <img class="profile-bg" src="{{ profile.background_picture.img.url }}" alt="">
         </div>
         
 		<div class="profile-dp-cont">
@@ -36,29 +35,29 @@
 	</div>
     <div>
         <h3>@{{profile.user.username}}</h3>
-        <div class="txt-bio-cont"><p class="txt-bio">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quis, odio.</p></div>
+        <div class="txt-bio-cont"><p class="txt-bio">Lorem ipsum dolor sit amet adipisicing elit. Quis, odio.</p></div>
+        <!-- <hr> -->
     </div>
+    <br>
 	<div class="profile-info-cont">
 		<div>
             <h4>Friends</h4>
             <p>{{ profile.friend.count }}</p>
         </div>
-		<div>
+        <div>
             <h4>Circles</h4>
             <p>{{ circles.count }}</p>
         </div>
+        <div>
+            <h4>Posts</h4>
+            <p>{{ posts.count }}</p>
+        </div>
 	</div>
+    <br><br>
 </div> 
 
-
-
-
-
-
-
-  
-  <!-- Modal (Profile Pic) -->
-  <div class="modal fade" id="change_profile_pic" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- Modal (Profile Pic) -->
+<div class="modal fade" id="change_profile_pic" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content item ">
             <div class="modal-header">
@@ -76,25 +75,22 @@
                         </label>
                     </div>
                 </form>
-                <!-- Closing the modal-body div here -->
             </div>
-            <!-- alert-box and img-area-cont are siblings of modal-body -->
-            <div class="alert-box"></div>
+            <div id="pf-alert-box"></div>
             <div class="img-area-cont">
-                <div class="image-area mb-3 chosen-pic-box"></div>
+                <div class="image-area mb-3 chosen-pic-box" id="chosen-profile-img-box"></div>
             </div>
-            <!-- Save Changes button is also a sibling of modal-body -->
-            <button class="btn btn-primary mt-3 save-changes-btn" disabled>Save Changes</button>
+            <button class="btn btn-primary mt-3" id="pf-save-changes-btn" disabled>Save Changes</button>
         </div>
     </div>
 </div>
 
-  <!-- Modal (Background Pic) -->
-  <div class="modal fade" id="change_background_pic" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- Modal (Background Pic) -->
+<div class="modal fade" id="change_background_pic" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content item ">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Changing your Background Picture</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Changing your Profile Picture</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body ">
@@ -108,42 +104,115 @@
                         </label>
                     </div>
                 </form>
-                <!-- Closing the modal-body div here -->
+                <div id="bg-alert-box"></div>
+                <div class="img-area-cont">
+                    <div class="image-area mb-3" id="chosen-background-img-box"></div>
+                </div>
+                <button class="btn btn-primary mt-3" id="bg-save-changes-btn" disabled>Save Changes</button>
             </div>
-            <!-- alert-box and img-area-cont are siblings of modal-body -->
-            <div class="alert-box"></div>
-            <div class="img-area-cont">
-                <div class="image-area mb-3 chosen-pic-box"></div>
-            </div>
-            <!-- Save Changes button is also a sibling of modal-body -->
-            <button class="btn btn-primary mt-3 save-changes-btn" disabled>Save Changes</button>
         </div>
     </div>
 </div>
 
+<!-- CIRCLES -->
+<hr>
+<div class="circles-cont">
+    {% for circle in circles %}
+    
+    <a href="{% url 'view_convo' circle.chat_room.id %}">
+        <div class="circles-item">
+            <p>{{ circle.name }}</p>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+<hr>
+
+<div class="main-sect sect-cont">
+    <div class="sub-sect">
+        <!-- CREATEPOST -->
+        <form method="POST" enctype="multipart/form-data" action="">
+            {% csrf_token %}
+                  <div class="custom-textarea-cont">
+                      <textarea name="{{ create_post_form.body.name }}" class="custom-textarea" id="captionInput" placeholder="What's on your mind.." oninput="checkInputs()"></textarea>
+                  </div>
+                    <hr>
+                  <div class="sub-item-cont">
+                      <div class="sub-item">
+                          <div class="audience-icon"></div>
+                          <label for="">
+                              <p>
+                                  Audience
+                              </p>
+                          </label>
+                      </div>
+                      <div class="sub-item">
+                        
+                          <label for="upload_image" class="upload-image-icon">
+                              <div class="">
+                              </div>
+                          </label>
+                          <label for="upload_image" class="file-label">
+                              <p>
+                                Add Photo
+                            </p>
+                                <input type="file" name="{{ create_post_form.img.name }}" id="upload_image" class="" onchange="previewImage(event)">
+                             </label>
+                      </div>
+                  </div>
   
+                  <div class="image-preview">
+                      <img id="imagePreview" src="#" alt="Selected Image" style="display: none;">
+                  </div>
+                  <div class="btn-cont">
+                      <button type="submit" id="create_post_btn" class="btn btn-primary" disabled>Create Post!</button>
+                  </div>
+              
+              
+            </form> 
+            <!-- CREATEPOST END -->
+    </div>
 
+
+            <!-- POST -->
+            {% for post in posts reversed %}
+            <div class="card item sub-sect">
+                
+                <div class="card-body">
+                    <h5>@{{post.user}}</h5> 
+                    {% if post.img %}
+                    <img src="{{post.img.url}}" class="card-img-top" alt="...">
+                    {% endif %}
+                    
+                    {% if post.body%}
+                    <p>
+                        {{post.body|linebreaksbr}}
+                    </p>
+                    {% endif %}
+                    <small>
+                        {{post.created_at}}
+                    </small>
+                    <div class="reactions-cont">
+                        <div class="reaction-icon">
+                            <div class="img-src"></div>
+                        </div>
+                        <div class="reaction-icon">
+                            <div class="img-src"></div>
+                        </div>
+                        <div class="reaction-icon">
+                            <div class="img-src"></div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    
+                </div>
+            </div>
+            {% endfor %}
+            <!-- POSTEND -->
+</div>
 <br><br><br><br><br><br><br><br><br><br>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <style>
 #upload {
@@ -160,13 +229,50 @@
     padding: 1rem;
     min-width: 50%;
     max-width: fit-content;
-    /* overflow: hidden; */
 }
-
 </style>  
 
 
+<script>
+    function previewImage(event) {
+        const imagePreview = document.getElementById('imagePreview');
+        const create_post_btn = document.getElementById('create_post_btn');
+        imagePreview.style.display = "block"
+        const file = event.target.files[0];
+        const reader = new FileReader();
+  
+        reader.onload = function () {
+            imagePreview.src = reader.result;
+        };
+  
+        if (file) {
+            reader.readAsDataURL(file);
+            create_post_btn.disabled = false;
+        }
+    }
+  </script>
+  
+  <script>
+      function checkInputs() {
+              const captionInput = document.getElementById('captionInput').value;
+              const fileInput = document.getElementById('imagePreview');
+              const create_post_btn = document.getElementById('create_post_btn');
+              
+              console.log(fileInput.getAttribute('src') === '#')
+              console.log(captionInput.trim() !== '')
+  
+  
+              if (captionInput.trim() !== '') {
+                  create_post_btn.disabled = false;
+              } else {
+                  if( fileInput.getAttribute('src') === '#') {
+                      create_post_btn.disabled = true;
+                  }
+              }
+          }
+  </script>
+
 {% endif %}
 
-
 {% endblock %}
+

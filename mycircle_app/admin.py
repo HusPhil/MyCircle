@@ -1,5 +1,5 @@
 from django.contrib import admin
-from . models import Profile, Post, Message, ChatRoom, Circle, FriendRequest, ProfilePicture
+from . models import Profile, Post, Message, ChatRoom, Circle, FriendRequest, ProfilePicture, BackgroundPicture
 
 # Register your models here.
 admin.site.register(Profile)
@@ -9,3 +9,4 @@ admin.site.register(Message)
 admin.site.register(Circle)
 admin.site.register(FriendRequest)
 admin.site.register(ProfilePicture)
+admin.site.register(BackgroundPicture)
