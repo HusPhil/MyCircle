@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.core.validators import FileExtensionValidator
 from django.contrib.auth.models import User
 from .models import Post, Circle, Profile, ProfilePicture, BackgroundPicture
 
@@ -18,6 +19,7 @@ class CreatePostForm(forms.ModelForm):
 			'body': forms.widgets.TextInput(attrs={"placeholder": "Enter your caption"}),
 		}
 		exclude = ('user',)
+		img = forms.ImageField(validators=[FileExtensionValidator(['jpg', 'jpeg', 'png'])])
 
 class CreateCircleForm(forms.ModelForm):
     class Meta:

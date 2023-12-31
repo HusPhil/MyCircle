@@ -74,61 +74,12 @@ def sign_out(request):
 	messages.error(request,'Please log in before you access this page')
 	return redirect('sign_in')
 
-# def profile(request, pk):
-# 	if request.user.is_authenticated:
-# 		profile_pic_form = UploadProfilePic(request.POST or None, request.FILES or None)
-# 		background_pic_form = UploadBackgroundPic(request.POST or None, request.FILES or None)
-# 		profile = Profile.objects.get(id=pk)
-# 		circles = Circle.objects.filter(members=profile.user)
-
-# 		print('profile_pic_form' in request.FILES)
-
-# 		if profile_pic_form.is_valid():
-			
-			# try:
-			# 	if ProfilePicture.objects.filter(user_profile=profile).exists():
-			# 		existing_profile_picture = ProfilePicture.objects.get(user_profile=profile)
-			# 		existing_profile_picture.delete()
-					
-				
-			# 	else:
-			# 		pass
-			
-			# except Profile.DoesNotExist:
-			# 	print('Profile does not exist!')
-
-			# try:
-			# 	profile_pic = profile_pic_form.save(commit=False)
-			# 	profile_pic.user_profile = request.user.profile
-			# 	profile_pic.save()
-				
-
-			# 	return JsonResponse({'message': 'works'})
-			# except Exception as e:
-			# 	print(f'Error: {e}')  # Log the exception for debugging purposes
-			# 	messages.error(request, 'Error occurred while uploading profile picture.')
-		
-# 		if background_pic_form.is_valid():
-# 			print("test here!0\n" * 10)
-# 			print("GAGAWA NG BG PIC OBJ")
-			
-
-# 		context = {
-# 			'profile_pic_form': profile_pic_form,
-# 			'background_pic_form': background_pic_form,
-# 			'profile': profile,
-# 			'circles': circles,
-# 		}
-
-# 		return render(request, 'profile.html', context)
-# 	messages.error(request,'Please log in before you access this page')
-# 	return redirect('sign_in')
-
 def profile(request, pk):
 	if request.user.is_authenticated:
 		profile = Profile.objects.get(id=pk)
 		circles = Circle.objects.filter(members=profile.user)
 		posts = Post.objects.filter(user=profile.user)
+		friends = request.user.profile.friend.all()
 		
 		profile_pic_form = UploadProfilePic()
 		background_pic_form = UploadBackgroundPic()
@@ -207,33 +158,14 @@ def profile(request, pk):
 			'create_post_form': create_post_form,
 			'profile': profile,
 			'circles': circles,
+			'friends': friends,
 			'posts': posts,
 		}
 
 		return render(request, 'profile.html', context)
 	
 	messages.error(request, 'Please log in before you access this page')
-	return redirect('sign_in')
-
-#  try:
-#                 # Check if a ProfilePicture exists for the current Profile and delete it
-#                 existing_profile_picture = ProfilePicture.objects.get(user_profile=profile)
-#                 existing_profile_picture.delete()
-#                 print('Existing ProfilePicture deleted.')
-                
-#             except ProfilePicture.DoesNotExist:
-#                 pass  # No existing ProfilePicture found
-            
-#             try:
-#                 profile_pic = profile_pic_form.save(commit=False)
-#                 profile_pic.user_profile = request.user.profile
-#                 profile_pic.save()
-#                 print('New ProfilePicture saved.')
-                
-#                 return JsonResponse({'message': 'works'})
-            
-            
-        
+	return redirect('sign_in')  
 
 def friends(request):
 	if request.user.is_authenticated:
@@ -257,23 +189,23 @@ def friends(request):
 	return redirect('sign_in')
 	
 def view_messages(request):
-	if request.user.is_authenticated:
-	    user = request.user
-	    circles = Circle.objects.filter(members=user)
+    if request.user.is_authenticated:
+        user = request.user
+        circles = Circle.objects.filter(members=user)
 
-	    chat_rooms = []
-	    for circle in circles:
-	        circle_chat_rooms = circle.chat_room
-	        chat_rooms.append(circle_chat_rooms)
+        chat_rooms = []
+        for circle in circles:
+            circle_chat_rooms = circle.chat_room
+            chat_rooms.append(circle_chat_rooms)
 
-	    context = {
-	       
-	        'chatrooms': chat_rooms,
-	       
-	    }
+        context = {
+            'chatrooms': chat_rooms,
+			'circles': circles,
+        }
 
-	    return render(request, 'messages.html', context)
-	return redirect('sign_in')
+        return render(request, 'messages.html', context)
+    return redirect('sign_in')
+
 
 
 # Create your action functions here
@@ -369,6 +301,7 @@ def get_messages(request, room_id):
 def send_friend_request(request):
 	if request.user.is_authenticated:
 		if request.method == 'POST':
+			print(request.POST)
 
 			# print(request.POST['receiver_user_id'])
 

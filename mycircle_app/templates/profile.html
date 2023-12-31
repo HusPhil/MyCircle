@@ -4,6 +4,8 @@
 {% block content %}
 
 {% if profile %}
+
+
 <div class="greet-cont">
     {% if profile.user.username == request.user.username %}
         <h1>Your Profile</h1>
@@ -115,19 +117,51 @@
 </div>
 
 <!-- CIRCLES -->
+
+
+{% if profile.user.username == request.user.username %}
+<h4 class="center-cont">Circles</h4>
+{% endif %}
+
+
 <hr>
-<div class="circles-cont">
-    {% for circle in circles %}
-    
-    <a href="{% url 'view_convo' circle.chat_room.id %}">
-        <div class="circles-item">
-            <p>{{ circle.name }}</p>
+{% if profile.user.username == request.user.username %}
+<div class="carousel-main">
+    <div class="carousel-container">
+        
+        {% for circle in circles %}
+        <div class="carousel-slide">
+            <a href="{% url 'view_convo' circle.chat_room.id %}">
+            <div class="circles-item">
+                <img class="circle-pic" src="..\..\media\circle_default.png" alt="">
+            </div>
+            <div class="circle-name-cont">
+                <p class="circle-name">{{ circle.name }}</p>
+            </div>
+         </a>
+         </div>
+         {% endfor %}
+         
         </div>
-    </a>
-    {% endfor %}
-</div>
+    </div>
+{% elif profile in friends %}
+    <div class="center-cont">
+        <a class="btn btn-primary" href="{% url 'unfriend' profile.id %}"><p>unfriend</p></a> 
+    </div>
+       
+{% else %}
+    <div class="center-cont">
+        <form action="{% url 'send_friend_request' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" value="{{ profile.id }}" name="receiver_user_id">
+            <button type="submit" class="btn btn-primary">Add Friend</button>
+        </form>
+    </div>
+{% endif %}
 <hr>
 
+
+{% if profile.user.username == request.user.username %}
 <div class="main-sect sect-cont">
     <div class="sub-sect">
         <!-- CREATEPOST -->
@@ -156,7 +190,7 @@
                               <p>
                                 Add Photo
                             </p>
-                                <input type="file" name="{{ create_post_form.img.name }}" id="upload_image" class="" onchange="previewImage(event)">
+                                <input type="file" name="{{ create_post_form.img.name }}" id="upload_image" accept=".jpg,.jpeg,.png" onchange="previewImage(event)">
                              </label>
                       </div>
                   </div>
@@ -212,65 +246,9 @@
             {% endfor %}
             <!-- POSTEND -->
 </div>
+{% endif %}
 <br><br><br><br><br><br><br><br><br><br>
 
-<style>
-#upload {
-    opacity: 0;
-}
-
-.img-area-cont {
-    display: flex;
-    justify-content: center;
-}
-
-.image-area {
-    border: 2px dashed rgba(255, 255, 255, 0.7);
-    padding: 1rem;
-    min-width: 50%;
-    max-width: fit-content;
-}
-</style>  
-
-
-<script>
-    function previewImage(event) {
-        const imagePreview = document.getElementById('imagePreview');
-        const create_post_btn = document.getElementById('create_post_btn');
-        imagePreview.style.display = "block"
-        const file = event.target.files[0];
-        const reader = new FileReader();
-  
-        reader.onload = function () {
-            imagePreview.src = reader.result;
-        };
-  
-        if (file) {
-            reader.readAsDataURL(file);
-            create_post_btn.disabled = false;
-        }
-    }
-  </script>
-  
-  <script>
-      function checkInputs() {
-              const captionInput = document.getElementById('captionInput').value;
-              const fileInput = document.getElementById('imagePreview');
-              const create_post_btn = document.getElementById('create_post_btn');
-              
-              console.log(fileInput.getAttribute('src') === '#')
-              console.log(captionInput.trim() !== '')
-  
-  
-              if (captionInput.trim() !== '') {
-                  create_post_btn.disabled = false;
-              } else {
-                  if( fileInput.getAttribute('src') === '#') {
-                      create_post_btn.disabled = true;
-                  }
-              }
-          }
-  </script>
 
 {% endif %}
 

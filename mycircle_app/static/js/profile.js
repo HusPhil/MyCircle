@@ -113,3 +113,38 @@ choose_profile_pic_btn.addEventListener('change', () => {
         });
     });
 });
+
+function previewImage(event) {
+    const imagePreview = document.getElementById('imagePreview');
+    const create_post_btn = document.getElementById('create_post_btn');
+    imagePreview.style.display = "block"
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function () {
+        imagePreview.src = reader.result;
+    };
+
+    if (file) {
+        reader.readAsDataURL(file);
+        create_post_btn.disabled = false;
+    }
+}
+
+function checkInputs() {
+    const captionInput = document.getElementById('captionInput').value;
+    const fileInput = document.getElementById('imagePreview');
+    const create_post_btn = document.getElementById('create_post_btn');
+    
+    console.log(fileInput.getAttribute('src') === '#')
+    console.log(captionInput.trim() !== '')
+
+
+    if (captionInput.trim() !== '') {
+        create_post_btn.disabled = false;
+    } else {
+        if( fileInput.getAttribute('src') === '#') {
+            create_post_btn.disabled = true;
+        }
+    }
+}

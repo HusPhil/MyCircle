@@ -1,0 +1,52 @@
+.msg-cont.item {
+    margin-top: 1.8rem;
+}
+
+.msg-nav {
+    display: flex;
+    justify-content: space-around;
+    list-style: none;
+
+    margin-top: 1.5rem;
+}
+
+.msg-nav-items * {
+    color: var(--fnt-main-color);
+    background-color: var(--input-field-color);
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 8px 18px;
+    border-radius: 10px;
+}
+
+.msg-nav-item-active {
+    background-color: var(--bg-main) !important;
+}
+
+.inbox {
+    background-color: var(--primary-color);
+    height: min(30rem, 40rem);
+    overflow: auto;
+    margin: 5px 20px;
+    border-radius: 12px;
+}
+
+.inbox-item {
+    border-top: 1px solid var(--secondary-color);
+}
+.inbox-item:last-child {
+    border-bottom: 1px solid var(--secondary-color);
+}
+
+#message-input {
+    --padding-val: 15px;
+    padding: var(--padding-val);
+    min-height: calc(4rem + var(--padding-val));
+    max-height: calc(10rem + var(--padding-val));
+
+
+    background-color: var(--input-field-color);
+    color: var(--fnt-main-color);
+}
+

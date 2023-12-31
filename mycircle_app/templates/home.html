@@ -3,94 +3,90 @@
 
 {% block content %}
 
-	
-    <div class="main-sect sect-cont">
-		<div class="sub-sect">
-			<!-- CREATEPOST -->
-			<form method="POST" enctype="multipart/form-data" action="">
-				{% csrf_token %}
-					  <div class="custom-textarea-cont">
-					  	<textarea name="{{ form.body.name }}" class="custom-textarea" id="captionInput" placeholder="What's on your mind.." oninput="checkInputs()"></textarea>
-					  </div>
-						<hr>
-					  <div class="sub-item-cont">
-						  <div class="sub-item">
-							  <div class="audience-icon"></div>
-							  <label for="">
-								  <p>
-									  Audience
-								  </p>
-							  </label>
-						  </div>
-						  <div class="sub-item">
-							
-							  <label for="upload_image" class="upload-image-icon">
-								  <div class="">
-								  </div>
-							  </label>
-							  <label for="upload_image" class="file-label">
-							  	<p>
-									Add Photo
-								</p>
-									<input type="file" name="{{ form.img.name }}" id="upload_image" class="" onchange="previewImage(event)">
-							 	</label>
-						  </div>
-					  </div>
-	  
-					  <div class="image-preview">
-						  <img id="imagePreview" src="#" alt="Selected Image" style="display: none;">
-					  </div>
-					  <div class="btn-cont">
-						  <button type="submit" id="create_post_btn" class="btn btn-primary" disabled>Create Post!</button>
-					  </div>
-				  
-				  
-				</form> 
-				<!-- CREATEPOST END -->
-		</div>
-
-		<div class="row">
-		    <div class="col sect-cont">
-		        <!-- POST -->
-		        {% for post in posts reversed %}
-		        <div class="card item sub-sect">
-		            
-		            <div class="card-body">
-		                <h5>@{{post.user}}</h5> 
-						{% if post.img %}
-						<img src="{{post.img.url}}" class="card-img-top" alt="...">
-						{% endif %}
-						
-		                {% if post.body%}
-		                <p>
-		                    {{post.body|linebreaksbr}}
-		                </p>
-		                {% endif %}
-						<small>
-							{{post.created_at}}
-						</small>
-						<div class="reactions-cont">
-							<div class="reaction-icon">
-								<div class="img-src"></div>
-							</div>
-							<div class="reaction-icon">
-								<div class="img-src"></div>
-							</div>
-							<div class="reaction-icon">
-								<div class="img-src"></div>
-							</div>
-						</div>
-
-						<hr>
-
-		                
-		            </div>
-		        </div>
-		        {% endfor %}
-		        <!-- POSTEND -->
-		</div>
+<div class="main-sect sect-cont">
+    <div class="sub-sect">
+        <!-- CREATEPOST -->
+        <form method="POST" enctype="multipart/form-data" action="">
+            {% csrf_token %}
+                  <div class="custom-textarea-cont">
+                      <textarea name="{{ create_post_form.body.name }}" class="custom-textarea" id="captionInput" placeholder="What's on your mind.." oninput="checkInputs()"></textarea>
+                  </div>
+                    <hr>
+                  <div class="sub-item-cont">
+                      <div class="sub-item">
+                          <div class="audience-icon"></div>
+                          <label for="">
+                              <p>
+                                  Audience
+                              </p>
+                          </label>
+                      </div>
+                      <div class="sub-item">
+                        
+                          <label for="upload_image" class="upload-image-icon">
+                              <div class="">
+                              </div>
+                          </label>
+                          <label for="upload_image" class="file-label">
+                              <p>
+                                Add Photo
+                            </p>
+                                <input type="file" name="{{ create_post_form.img.name }}" id="upload_image" accept=".jpg,.jpeg,.png" onchange="previewImage(event)">
+                             </label>
+                      </div>
+                  </div>
+  
+                  <div class="image-preview">
+                      <img id="imagePreview" src="#" alt="Selected Image" style="display: none;">
+                  </div>
+                  <div class="btn-cont">
+                      <button type="submit" id="create_post_btn" class="btn btn-primary" disabled>Create Post!</button>
+                  </div>
+              
+              
+            </form> 
+            <!-- CREATEPOST END -->
     </div>
 
+
+            <!-- POST -->
+            {% for post in posts reversed %}
+            <div class="card item sub-sect">
+                
+                <div class="card-body">
+                    <h5>@{{post.user}}</h5> 
+                    {% if post.img %}
+                    <img src="{{post.img.url}}" class="card-img-top" alt="...">
+                    {% endif %}
+                    
+                    {% if post.body%}
+                    <p>
+                        {{post.body|linebreaksbr}}
+                    </p>
+                    {% endif %}
+                    <small>
+                        {{post.created_at}}
+                    </small>
+                    <div class="reactions-cont">
+                        <div class="reaction-icon">
+                            <div class="img-src"></div>
+                        </div>
+                        <div class="reaction-icon">
+                            <div class="img-src"></div>
+                        </div>
+                        <div class="reaction-icon">
+                            <div class="img-src"></div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    
+                </div>
+            </div>
+            {% endfor %}
+            <!-- POSTEND -->
+</div>
 
 
 
