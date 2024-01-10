@@ -17,7 +17,7 @@
         <li class="nav-item">
          <a class="nav-link 
          {% if request.resolver_match.url_name == 'view_convo' or request.resolver_match.url_name == 'messages' %}active-nav{% endif %}" 
-         href="{% url 'messages' %}">Messages</a>
+         href="{% url 'circle_messages' %}">Messages</a>
         </li>
         <li class="nav-item">
           <a class="nav-link {% if request.resolver_match.url_name == 'friends' %}active-nav{% endif %}" 

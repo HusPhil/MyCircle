@@ -21,13 +21,14 @@ class Post(models.Model):
 #CHAT SYSTEM
 
 class Circle(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    members = models.ManyToManyField(User, related_name='circles')
-    created_at = models.DateTimeField(auto_now_add=True)
-    name = models.CharField(max_length=100, blank=True)
+	id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+	members = models.ManyToManyField(User, related_name='circles')
+	img = models.ImageField(default='circle_default.png', upload_to='uploaded_circle_img/')
+	created_at = models.DateTimeField(auto_now_add=True)
+	name = models.CharField(max_length=100, blank=True)
 
-    def __str__(self):
-        return self.name or f"Circle {self.pk}"
+	def __str__(self):
+		return self.name or f"Circle {self.pk}"
 
 class ChatRoom(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -41,13 +42,12 @@ class ChatRoom(models.Model):
         super(ChatRoom, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.name or f"Chat Room {self.id}"
+        return self.name or f"(ChRm) {self.circle.name}"
 
 def create_chatroom(sender, instance, created, **kwargs):
-    if created:
-        # Create a ChatRoom associated with the new Circle
-        chat_room = ChatRoom.objects.create(circle=instance)
-        chat_room.name = f"Chat Room for {instance}"     
+	if created:
+		chat_room = ChatRoom.objects.create(circle=instance)
+		chat_room.name = f"Chat Room for {instance}" 
 post_save.connect(create_chatroom, sender=Circle)
 
 class Message(models.Model):
@@ -69,6 +69,8 @@ class Profile(models.Model):
 
 	def __str__(self):
 		return self.user.username
+
+	
 
 def create_profile(sender, instance, created, **kwargs): 
 	if created:

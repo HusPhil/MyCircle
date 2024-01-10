@@ -10,6 +10,10 @@
     margin-top: 1.5rem;
 }
 
+.msg-nav-items a {
+    background-color: var(--bg-item);
+}
+
 .msg-nav-items * {
     color: var(--fnt-main-color);
     background-color: var(--input-field-color);
@@ -24,29 +28,327 @@
     background-color: var(--bg-main) !important;
 }
 
-.inbox {
+.inbox, .convo-body {
     background-color: var(--primary-color);
-    height: min(30rem, 40rem);
+    max-height: 90vh;
     overflow: auto;
     margin: 5px 20px;
     border-radius: 12px;
+    font-family: var(--fnt-main-style);
+    font-size: var(--fnt-main-size);
 }
 
 .inbox-item {
+    display: flex;
+    flex-direction: row;
+
+    margin: 0px 20px;
+    
+
     border-top: 1px solid var(--secondary-color);
+    min-width: 80%;
+    max-width: 90%;
+
+    color: var(--fnt-main-color);
 }
-.inbox-item:last-child {
+.inbox-wrapper:first-child .inbox-item{
+    margin-top: 15px;
+    border: none;
+}
+.inbox-wrapper:last-child {
     border-bottom: 1px solid var(--secondary-color);
+    margin-bottom: 15px;
+}
+
+.inbox-user-img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+
+
+    padding: 5px;
+    border-radius: 50%;
+    background-color: red;
+    border: 5px solid var(--bg-primary);
+    overflow: hidden;
+    margin: 10px 0px;
+    
+    aspect-ratio: 1;
+    object-fit: cover;
+    min-width: 80px;
+    max-height: 80px;
+}
+
+.inbox-user-img img {
+    aspect-ratio: 1;
+    object-fit: cover;
+    width: 80px;
+}
+.msg-info {
+    margin-top: .8rem;
+
+    margin-left: 1rem;
+    width: 70%;
+
+}
+
+.msg-info > p:first-of-type{
+    font-size: var(--fnt-size-100s) !important;
+    max-width: 35ch;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.msg-info > p:last-of-type{
+    font-size: var(--fnt-size-200s) !important;
+}
+
+
+
+
+.convo-header {
+    display: flex;
+    justify-content: space-between;
+
+    width: 100%;
+    /* border: 1px solid red; */
+}
+
+
+.convo-header > a:first-of-type {
+    align-self: center;
+    margin-left: 25px;
+}
+
+.convo-header > a:last-of-type {
+    align-self: center;
+    margin-right: 25px;
+}
+
+.convo-header > h2 {
+    color: var(--fnt-main-color);
+}
+
+
+.convo-header button {
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 10px;
+    padding: 5px 10px;
+
+}
+
+.back-icon, .chat-settings-icon {
+    aspect-ratio: 1;
+    max-width: 20px;
+}
+
+.convo-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.message-item {
+    display: flex;
+    
+    color: var(--fnt-main-color);
+    max-width: 80%;
+    padding: 0px 15px;
+
+    margin: .8rem 0;
+    
+}
+
+.message-sent {
+    align-self: flex-end;
+}
+
+.message-item.message-sent .sender-info {
+    text-align: right;
+}
+
+.sender-info {
+    color: var(--input-field-color);
+    font-size: var(--fnt-size-200s);
+    margin: 0;
+}
+
+.message-content {
+    margin: 0;
+    padding: 12px;
+    border-radius: 10px;
+    width: fit-content;
+    font-size: var(--fnt-size-100s);
+}
+
+.message-sent .message-content {
+    align-self: flex-end;
+}
+
+.sender-pic {
+    align-self: flex-end;
+    
+    aspect-ratio: 1;
+    /* object-fit: cover; */
+    width: auto;
+    max-width: 50px;
+    max-height: 50px;
+    border-radius: 50%;
+}
+
+.message-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.message-item.message-received .message-body {
+    margin-left: 15px;
+}
+
+.message-item.message-received .message-content {
+    background-color: var(--input-field-color);
+}
+
+.message-item.message-sent .message-content {
+    /* text-align: right;/ */
+    background-color: var(--accent-color);
+}
+
+.message-input-cont {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    margin: 20px;
+    
 }
 
 #message-input {
     --padding-val: 15px;
     padding: var(--padding-val);
-    min-height: calc(4rem + var(--padding-val));
-    max-height: calc(10rem + var(--padding-val));
+    max-height: 5rem;
+    width: 100%;
+    resize: none;
+    border: none;
+    outline: none;
 
 
     background-color: var(--input-field-color);
     color: var(--fnt-main-color);
+    margin: 0;
+
 }
 
+#send-message-btn {
+    background-color: var(--primary-color);
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    
+    transition: opacity .5s ease-in-out;
+}
+
+#send-message-btn:disabled {
+    opacity: 0.3;
+    transition: opacity .5s ease-in-out;
+}
+
+.send-icon-img {
+    width: 1.3rem;
+    aspect-ratio: 1;
+
+}
+
+.msg-input-txt{
+    display: flex;
+    align-items: center;
+
+    background-color: var(--input-field-color);
+    overflow: hidden;
+    border-radius: 12px;
+    width: 75%;
+    height: fit-content;
+}
+
+.btn-add-msg {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--accent-color);
+    border-radius: 15px;
+    margin: 20px 0px;
+    width: 100%;
+    background-color: var(--primary-color);
+}
+
+.btn-add-msg:hover {
+    background-color: var(--bg-items);
+}
+
+.btn-add-msg h2 {
+    padding: 10px;
+}
+
+.create-circle-cont {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--fnt-main-color);
+}
+
+.create-circle-cont form {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 90%;
+}
+
+.choose-members-cont {
+    background-color: var(--input-field-color); 
+    padding: 15px;
+    max-height: 8rem;
+    overflow: auto;
+    border-radius: 12px;
+    width: 75%;
+}
+
+.input-item {
+    background-color: var(--input-field-color);
+}
+
+#create-circle-btn {
+    background-color: var(--accent-color);
+    border: none;
+    border-radius: 15px;
+    width: 80%;
+    padding: 10px;
+}
+
+#input-circle-name {
+    outline: none;
+    border: none;
+    padding: 10px;
+    border-radius: 12px;
+    width: 75%;
+}
+
+#create-circle-error {
+    padding-top: 10px;
+}
+
+
+
+@media screen and (max-width: 1020px) {
+    html {
+        font-size: 10px;
+    }
+    .inbox-user-img {
+        min-width: 50px;
+        max-height: 50px;
+    }
+    .inbox-user-img img {
+        width: 50px;
+    }
+}

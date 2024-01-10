@@ -10,13 +10,32 @@
 
     --fnt-main-color: #FAF4D3;
     --fnt-main-size: 1.2rem;
+    --fnt-size-100s: .95rem;
+    --fnt-size-200s: .8rem;
+    --fnt-size-100l: 1.8rem;
     --fnt-secondary-size: 0.8rem;
     --fnt-main-style: 'Varela Round', sans-serif;
     
 }
 
+html {
+    font-size: 16px; /* Define the root font size */
+}
+
+.modal-content.item {
+    /* max-width: 80vw; */
+    border: 1px solid var(--secondary-color);
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: 85vw;
+}
+
 * {
     font-family: 'Varela Round', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: var(--fnt-main-color);
 }
 
 .side-content {
@@ -40,6 +59,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+.center-contX {
+    display: flex;
+    justify-content: center;
 }
 
 h4.center-cont {
@@ -96,7 +119,7 @@ h4.center-cont {
     flex-direction: column;
 }
 
-.nav-item-cont .nav-item:hover, .nav-item-cont .nav-item:has(.active-nav) {
+.nav-item-cont .nav-item:has(.active-nav) {
     border: 2px solid var(--accent-color);
     transform: scale(0.8);
     background-color: var(--primary-color);
@@ -106,10 +129,13 @@ h4.center-cont {
     transform: scale(0.8);
 }
 
+.nav-item-cont .nav-item .img-src {
+    transition: all 0.5s ease-in-out;
+}
+
 .nav-item-cont .nav-item:nth-child(1) .img-src {
     background-image: url(../icons/home_icon.png);
     transform: scale(0.8);
-    transition: all 0.5s ease-in-out;
 }
 .nav-item-cont .nav-item:nth-child(1):hover .img-src {
     background-image: url(../icons/home_icon_active.png);
@@ -457,6 +483,28 @@ p {
 
 a {
     text-decoration: none;
+}
+
+.btn-close {
+    background-color: var(--accent-color);
+}
+
+/* Width, color and background of the scrollbar */
+::-webkit-scrollbar {
+    height: 8px;
+    width: .5rem;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--input-field-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+}
+
+::-webkit-scrollbar-track-piece:start {
+    background: var(--accent-color);
 }
 
 @media screen and (max-width: 1020px) {

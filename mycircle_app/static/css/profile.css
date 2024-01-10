@@ -86,6 +86,7 @@
     aspect-ratio: 1/1;
     border-radius: 50%;
     border: 10px solid var(--bg-items);
+    object-fit: cover;
     width: 200px;
 }
 
@@ -188,6 +189,7 @@ label[for="choose-profile-pic-btn"] {
     background-color: var(--secondary-color);
     border: 5px solid var(--bg-primary);
     overflow: hidden;
+    max-width: 100px;
 }
 
 .circle-name-cont {
@@ -212,8 +214,9 @@ label[for="choose-profile-pic-btn"] {
 
 .circle-pic {
     aspect-ratio: 1/1;
-    object-fit: contain;
+    object-fit: cover;
     width: 100px;
+    
 }
 
 
@@ -253,7 +256,7 @@ label[for="choose-profile-pic-btn"] {
 }
 
 .carousel-slide {
-    flex: 1 0 calc((100%/3) - 8px/3 );
+    flex: 1 0 calc((100%/3) - 8px/2 );
     aspect-ratio: 1;
     flex-flow: column nowrap;
     display: flex;

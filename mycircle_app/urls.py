@@ -9,7 +9,8 @@ urlpatterns = [
 
 	path('profile/<uuid:pk>', views.profile, name='profile'),
 	path('friends', views.friends, name='friends'),
-	path('messages', views.view_messages, name='messages'),
+	path('circle_messages', views.view_circle_messages, name='circle_messages'),
+    path('friend_messages', views.view_friend_messages, name='friend_messages'),
 	path('m/<uuid:room_id>', views.view_convo, name='view_convo'),
 	path('m/send_message', views.send_message, name='send_message'),
 	path('create_circle', views.create_circle, name='create_circle'),

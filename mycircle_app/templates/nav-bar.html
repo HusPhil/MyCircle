@@ -10,8 +10,8 @@
             ></div>
             {% endif %}
         </a>
-        <a href="{% url 'messages' %}" class="nav-item">
-            <div class="img-src {% if request.resolver_match.url_name == 'messages' or request.resolver_match.url_name == 'view_convo' %}active-nav{% endif %}"
+        <a href="{% url 'circle_messages' %}" class="nav-item">
+            <div class="img-src {% if request.resolver_match.url_name == 'circle_messages' or request.resolver_match.url_name == 'view_convo' %}active-nav{% endif %}"
             ></div>
         </a>
         

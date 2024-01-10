@@ -133,7 +133,7 @@
         <div class="carousel-slide">
             <a href="{% url 'view_convo' circle.chat_room.id %}">
             <div class="circles-item">
-                <img class="circle-pic" src="..\..\media\circle_default.png" alt="">
+                <img class="circle-pic" src="{{ circle.img.url }}" alt="">
             </div>
             <div class="circle-name-cont">
                 <p class="circle-name">{{ circle.name }}</p>

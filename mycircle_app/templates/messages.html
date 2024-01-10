@@ -1,50 +1,143 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
 
-	<div class="item msg-cont">
-		<div class="util-cont-100">
-			<ul class="msg-nav">
+<div class="item msg-cont">
+	{% if request.resolver_match.url_name == 'circle_messages' or request.resolver_match.url_name == 'friend_messages'%}
+	<div class="util-cont-100">
+		
+		<ul class="msg-nav">
 				<li class="msg-nav-items">
-					<button class="msg-nav-item-active">Circles</button>
+					<a href="{% url 'circle_messages' %}">
+						<button class="{% if request.resolver_match.url_name == 'circle_messages' %} msg-nav-item-active {% endif %}">Circles</button>
+					</a>
+					
 				</li>
 				<li class="msg-nav-items ">
-					<button >Friends</button>
+					<a href="{% url 'friend_messages' %}">
+						<button class="{% if request.resolver_match.url_name == 'friend_messages' %} msg-nav-item-active {% endif %}">Friends</button>
+					</a>
 				</li>
 			</ul>
 		</div>
 		<hr>
 		<div class="inbox">
-			<div class="inbox-item">
-				
-			</div>
+
+			{% for chatroom, latest_message in chatrooms.items %}
+			{% if request.resolver_match.url_name == 'circle_messages' %}  
+			<a href="{% url 'view_convo' chatroom.id %}" class="inbox-wrapper"><div class="inbox-item">
+				<div class="inbox-user-img">
+					<img src="{{chatroom.circle.img.url}}" alt="Circle Image">
+				</div>
+				<div class="msg-info">
+					<h5 style="color: aliceblue;">{{chatroom.circle.name}}</h5>
+					<p><strong>{{ latest_message.sender }}:</strong> {{ latest_message.content }}</p>
+					<p>{{ latest_message.timestamp }}</p>
+				</div>
+			</div></a>
+			{% elif request.resolver_match.url_name == 'friend_messages' %} 
+			
+				<a href="{% url 'view_convo' chatroom.id %}" class="inbox-wrapper"><div class="inbox-item">
+					<div class="inbox-user-img">
+						<img src="{{chatroom.circle.img.url}}" alt="Circle Image">
+					</div>
+					<div class="msg-info">
+						<h5 style="color: aliceblue;">{{chatroom.circle.name}}</h5>
+						<p><strong>{{ latest_message.sender }}:</strong> {{ latest_message.content }}</p>
+						<p>{{ latest_message.timestamp }}</p>
+					</div>
+				</div></a>
+				{% endif %}
+				{% endfor %}
 		</div>
 
-	</div>
+		{% elif request.resolver_match.url_name == 'view_convo' %}
+
+		<div class="convo-header">
+			<a href="{% url 'circle_messages' %}"><button>
+				<img class="back-icon" src="{% static 'icons/back-icon.png' %}" alt="BACK">
+			</button></a>
+			<h2>{{room.circle.name}}</h2>
+			<a href="{% url 'circle_messages' %}"><button>
+				<img class="chat-settings-icon" src="{% static 'icons/chat-settings.png' %}" alt="SETTINGS">
+			</button></a>
+		</div>
+		<hr>
+		<div class="convo-body" id="chat-messages">
+			<!-- <div class="message-item {% if request.user.username == 'husph1' %}message-sent {% endif %}"><img src="../../media/blank_img.png" alt="" class="sender-pic"><div class="message-body"><p class="sender-info">@husph1</p><p class="message-content">hindi naman sa pag-aano pero edi wow sayo diba!</p></div></div> -->
+		</div>
+		{% if room.id%}
+		<form id="message-form">
+		<div class="message-input-cont">
+				{% csrf_token %}
+				<input type="hidden" name="room_id" id="room_id" value="{{ room.id }}">
+				<div class="msg-input-txt">
+					<textarea name="message" id="message-input" rows="1" placeholder="Enter your message here.." oninput="checkMsgInput()"></textarea>
+				</div>
+				<button  type="submit" id="send-message-btn" class="" disabled>
+					<img class="send-icon-img" src="{% static 'icons/send-btn-icon.png' %}" alt="">
+				</button>
+			</div>
+		</form>
+		{% endif %}
+		<hr> 
+		{% endif %}
+ 		</div>
+	<br><br>
+	{% if request.resolver_match.url_name == 'circle_messages' %}
+	<button class="btn-add-msg" type="button"  data-bs-toggle="modal" data-bs-target="#create_circle_modal">
+		<h2>+ Create New Circle</h2>
+	</button>
+	{% elif request.resolver_match.url_name == 'friend_messages' %}
+	<button class="btn-add-msg">
+		<h2>+ Add New Message</h2>
+	</button>
+	{% endif %}
 
 
-<br><br><br><br><br><br><br><br><br><br>
-	<!-- Script tags and other JavaScript code goes here -->
+<!-- Modal (Create Circle) -->
+<div class="modal fade" id="create_circle_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content item ">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Create a New Circle</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="create-circle-cont"> 
+					<form method="post" action="{% url 'create_circle' %}" id="create-circle-frm">
+						{% csrf_token %}
+						
+						<!-- Text input for circle name -->
+						<h5>Name Your Circle:</h5>
+						<input type="text" class="input-item" name="{{ circle_form.name.name }}" id="input-circle-name" oninput="testhaks()"/>
+						<br>
+						
+						<h5>Choose Members:</h5>
+						<div class="choose-members-cont">
+						{% for member in circle_form.members.field.queryset %}
+						<label>
+							<input type="checkbox" name="{{circle_form.members.name}}" value="{{ member.id }}" /> {{ member.user.username }}
+						</label><br>
+						{% endfor %}
+						</div>
+						<br><br>
+						<button type="submit" id="create-circle-btn">Create Circle</button>
+						<div id="create-circle-error"></div>
+					</form>
+				</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+	var current_user = '{{request.user.username}}';
+	var createCircleFrmName = '{{circle_form.members.name}}';
+	var currentUrl = '{{request.resolver_match.url_name}}'
+
+</script>
 
 
 
 {% endblock %}
-		<!-- <div class="center-cont">
-			<div class="input-box">
-				<textarea name="message" id="message-input" rows="2" oninput="autoResize()"></textarea>
-				<button>Send</button>
-			</div>
-			
-			{% if room.id %}
-				<form id="message-form">
-					{% csrf_token %}
-					<div class="input-group">
-						<input type="hidden" name="room_id" id="room_id" value="{{ room.id }}">
-						<textarea name="message" id="message-input" class="form-control" rows="3" placeholder="Type your message"></textarea>
-						<div class="input-group-append">
-							<button type="submit" id="send-message-btn" class="btn btn-primary">Send</button>
-						</div>
-					</div>
-				</form>
-			{% endif %} 
-		</div> -->

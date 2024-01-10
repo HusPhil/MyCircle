@@ -31,6 +31,7 @@ class CreateCircleForm(forms.ModelForm):
         current_user_profile = Profile.objects.get(user=user)
         self.fields['members'].queryset = current_user_profile.friend.exclude(user=user)
 
+
 class CreateUserForm(UserCreationForm):
 	class Meta():
 		model = User 
