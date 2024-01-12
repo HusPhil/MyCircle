@@ -30,6 +30,18 @@ html {
     max-width: 85vw;
 }
 
+.modal-content {
+    max-height: 90vh;
+}
+
+/* .flex-cont-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+} */
+
 * {
     font-family: 'Varela Round', sans-serif;
     margin: 0;
@@ -487,6 +499,17 @@ a {
 
 .btn-close {
     background-color: var(--accent-color);
+}
+
+.search-by-attr {
+    background-color: var(--secondary-color);
+    color: var(--input-field-color);
+    outline: none;
+    border: none;
+    padding: 5px 20px;
+    border-radius: 12px;
+    width: 100%;
+    margin-bottom: 10px;
 }
 
 /* Width, color and background of the scrollbar */

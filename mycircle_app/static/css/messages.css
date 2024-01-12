@@ -69,7 +69,7 @@
 
     padding: 5px;
     border-radius: 50%;
-    background-color: red;
+    background-color: var(--secondary-color);
     border: 5px solid var(--bg-primary);
     overflow: hidden;
     margin: 10px 0px;
@@ -186,14 +186,14 @@
     align-self: flex-end;
 }
 
-.sender-pic {
+.profile-pic-icon {
     align-self: flex-end;
     
     aspect-ratio: 1;
     /* object-fit: cover; */
     width: auto;
-    max-width: 50px;
-    max-height: 50px;
+    max-width: 3rem;
+    max-height: 3rem;
     border-radius: 50%;
 }
 
@@ -290,7 +290,7 @@
     padding: 10px;
 }
 
-.create-circle-cont {
+.search-sect-cont {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -298,27 +298,27 @@
     color: var(--fnt-main-color);
 }
 
-.create-circle-cont form {
+.search-sect-cont form {
     display: flex;
     align-items: center;
     flex-direction: column;
     width: 90%;
 }
 
-.choose-members-cont {
+.choose-friend-cont {
     background-color: var(--input-field-color); 
     padding: 15px;
-    max-height: 8rem;
+    max-height: 15rem;
     overflow: auto;
     border-radius: 12px;
-    width: 75%;
+    width: 90%;
 }
 
 .input-item {
     background-color: var(--input-field-color);
 }
 
-#create-circle-btn {
+#create-circle-btn, #new-circle-msg-btn {
     background-color: var(--accent-color);
     border: none;
     border-radius: 15px;
@@ -326,7 +326,7 @@
     padding: 10px;
 }
 
-#input-circle-name {
+.input-txt-stn {
     outline: none;
     border: none;
     padding: 10px;
@@ -336,6 +336,16 @@
 
 #create-circle-error {
     padding-top: 10px;
+}
+
+.profile-option-item {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.profile-option-item:first-child {
+    margin-top: 0;
 }
 
 

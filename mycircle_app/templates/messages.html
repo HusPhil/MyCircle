@@ -3,6 +3,7 @@
 {% block content %}
 
 <div class="item msg-cont">
+	<!-- <a href="{% url 'get_friends_asJson' %}">ediwow</a> -->
 	{% if request.resolver_match.url_name == 'circle_messages' or request.resolver_match.url_name == 'friend_messages'%}
 	<div class="util-cont-100">
 		
@@ -30,31 +31,41 @@
 					<img src="{{chatroom.circle.img.url}}" alt="Circle Image">
 				</div>
 				<div class="msg-info">
-					<h5 style="color: aliceblue;">{{chatroom.circle.name}}</h5>
+					<h5>{{chatroom.circle.name}}</h5>
 					<p><strong>{{ latest_message.sender }}:</strong> {{ latest_message.content }}</p>
 					<p>{{ latest_message.timestamp }}</p>
 				</div>
 			</div></a>
 			{% elif request.resolver_match.url_name == 'friend_messages' %} 
-			
+				{% if chatroom.circle.type == 'friends' %}
 				<a href="{% url 'view_convo' chatroom.id %}" class="inbox-wrapper"><div class="inbox-item">
 					<div class="inbox-user-img">
-						<img src="{{chatroom.circle.img.url}}" alt="Circle Image">
+							{% for member in chatroom.circle.members.all %}
+							{% if member.username != request.user.username %}
+							<img src="{{member.profile.profile_picture.img.url}}" alt="Circle Image">
+							{% endif %}
+							{% endfor %}
+						</div>
+						<div class="msg-info">
+							{% for member in chatroom.circle.members.all %}
+							{% if member.username != request.user.username %}
+							<h5>{{member.username}}</h5>
+							{% endif %}
+							{% endfor %}
+							<p><strong>{{ latest_message.sender }}:</strong> {{ latest_message.content }}</p>
+							<p>{{ latest_message.timestamp }}</p>
+						</div>
 					</div>
-					<div class="msg-info">
-						<h5 style="color: aliceblue;">{{chatroom.circle.name}}</h5>
-						<p><strong>{{ latest_message.sender }}:</strong> {{ latest_message.content }}</p>
-						<p>{{ latest_message.timestamp }}</p>
-					</div>
-				</div></a>
+				</a>
 				{% endif %}
-				{% endfor %}
+			{% endif %}
+			{% endfor %}
 		</div>
 
 		{% elif request.resolver_match.url_name == 'view_convo' %}
 
 		<div class="convo-header">
-			<a href="{% url 'circle_messages' %}"><button>
+			<a href="{% if room.circle.type == 'standard' %} {% url 'circle_messages' %} {% else %} {% url 'friend_messages' %} {% endif %}"><button>
 				<img class="back-icon" src="{% static 'icons/back-icon.png' %}" alt="BACK">
 			</button></a>
 			<h2>{{room.circle.name}}</h2>
@@ -86,56 +97,98 @@
 	<br><br>
 	{% if request.resolver_match.url_name == 'circle_messages' %}
 	<button class="btn-add-msg" type="button"  data-bs-toggle="modal" data-bs-target="#create_circle_modal">
-		<h2>+ Create New Circle</h2>
+		<h2 style="margin: 0;">+ Create New Circle</h2>
 	</button>
+	<!-- Modal (Create Circle) -->
+	<div class="modal fade" id="create_circle_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content item ">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="exampleModalLabel">Create a New Circle</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body flex-cont-col">
+					<div class="search-sect-cont"> 
+						<form method="post" action="{% url 'create_circle' %}" id="create-circle-frm-stn">
+							{% csrf_token %}
+							
+							<!-- Text input for circle name -->
+							<h5>Name Your Circle:</h5>
+							<input type="text" class="input-item input-txt-stn" name="{{ circle_form.name.name }}" id="input-circle-name" placeholder="My Favorite People" oninput="testhaks()"/>
+							<br>
+							
+							<h5>Choose Members:</h5>
+							<div class="choose-friend-cont">
+							<input type="text" class="search-by-attr" placeholder="Search username">
+							{% for member in circle_form.members.field.queryset %}
+							<label class="profile-option-item">
+								<div style="display: flex; align-items: center;">
+									<img class="profile-pic-icon" style="align-self: center;" src="{{ member.profile_picture.img.url }}" alt="profile_Pic">
+									<p style="margin: 0; margin-left: 10px;" test-name="{{ member.user.username }}">{{ member.user.username }}</p>
+								</div>
+								<input type="checkbox" name="{{circle_form.members.name}}" value="{{ member.id }}" />
+							</label>
+							{% endfor %}
+							</div>
+							<br><br>
+							<button type="submit" id="create-circle-btn">Create Circle</button>
+							<div id="create-circle-stn-error"></div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 	{% elif request.resolver_match.url_name == 'friend_messages' %}
-	<button class="btn-add-msg">
-		<h2>+ Add New Message</h2>
+	<button class="btn-add-msg" type="button"  data-bs-toggle="modal" data-bs-target="#new_circle_msg_modal">
+		<h2 style="margin: 0;">+ Add New Message</h2>
 	</button>
+	<!-- Modal (Add new message) -->
+	<div class="modal fade" id="new_circle_msg_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content item ">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="exampleModalLabel">Add New Message</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body flex-cont-col">
+					<div class="search-sect-cont"> 
+						<form method="post" action="{% url 'create_circle' %}" id="create-circle-frm-frn">
+							{% csrf_token %}
+							
+							<h5>Choose a Friend:</h5>
+							<div class="choose-friend-cont">
+							<input type="text" class="search-by-attr" placeholder="Search username">
+							{% for member in circle_form.members.field.queryset %}
+							<label class="profile-option-item">
+								<div style="display: flex; align-items: center;">
+									<img class="profile-pic-icon" style="align-self: center;" src="{{ member.profile_picture.img.url }}" alt="profile_Pic">
+									<p style="margin: 0; margin-left: 10px;" test-name="{{ member.user.username }}">{{ member.user.username }}</p>
+								</div>
+								<input type="checkbox" name="{{circle_form.members.name}}" value="{{ member.id }}" />
+							</label>
+							{% endfor %}
+							</div>
+							<br><br>
+							<input type="hidden" name="{{circle_form.type.name}}" value="friends" />
+							<button type="submit" id="new-circle-msg-btn">Add new message</button>
+							<div id="create-circle-frn-error"></div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 	{% endif %}
 
 
-<!-- Modal (Create Circle) -->
-<div class="modal fade" id="create_circle_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content item ">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Create a New Circle</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="create-circle-cont"> 
-					<form method="post" action="{% url 'create_circle' %}" id="create-circle-frm">
-						{% csrf_token %}
-						
-						<!-- Text input for circle name -->
-						<h5>Name Your Circle:</h5>
-						<input type="text" class="input-item" name="{{ circle_form.name.name }}" id="input-circle-name" oninput="testhaks()"/>
-						<br>
-						
-						<h5>Choose Members:</h5>
-						<div class="choose-members-cont">
-						{% for member in circle_form.members.field.queryset %}
-						<label>
-							<input type="checkbox" name="{{circle_form.members.name}}" value="{{ member.id }}" /> {{ member.user.username }}
-						</label><br>
-						{% endfor %}
-						</div>
-						<br><br>
-						<button type="submit" id="create-circle-btn">Create Circle</button>
-						<div id="create-circle-error"></div>
-					</form>
-				</div>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <script>
 	var current_user = '{{request.user.username}}';
 	var createCircleFrmName = '{{circle_form.members.name}}';
 	var currentUrl = '{{request.resolver_match.url_name}}'
-
+	var getFriendsAsJsonUrl = "{% url 'get_friends_asJson' %}"
 </script>
 
 

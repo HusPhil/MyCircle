@@ -6,6 +6,7 @@ from django.core.serializers import serialize
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Max, Count
+from django.urls import reverse
 
 from .forms import (
     CreateUserForm,
@@ -36,6 +37,8 @@ def home(request):
         friends = current_user_profile.friend.all()
         posts = Post.objects.all()
 
+
+
         if request.method == "POST":
 
             if form.is_valid():
@@ -47,7 +50,7 @@ def home(request):
         context = {
             "user": request.user,
             "friends": friends,
-            "form": form,
+            "create_post_form": form,
             "posts": posts,
         }
         return render(request, "home.html", context)
@@ -106,7 +109,6 @@ def profile(request, pk):
         create_post_form = CreatePostForm()
 
         if request.method == "POST":
-            print(request.POST)
             profile_pic_form = UploadProfilePic(
                 request.POST or None, request.FILES or None
             )
@@ -125,7 +127,6 @@ def profile(request, pk):
             create_post_form = CreatePostForm(request.POST, request.FILES)
 
             if profile_pic_form.is_valid() and profile_img_file_exist:
-                print("profile")
                 try:
                     if ProfilePicture.objects.filter(user_profile=profile).exists():
                         existing_profile_picture = ProfilePicture.objects.get(
@@ -152,7 +153,6 @@ def profile(request, pk):
                     )
 
             elif background_pic_form.is_valid() and background_img_file_exist:
-                print("background")
 
                 try:
                     if BackgroundPicture.objects.filter(user_profile=profile).exists():
@@ -177,12 +177,12 @@ def profile(request, pk):
                     )
 
             elif create_post_form.is_valid():
-                print("post")
                 post = create_post_form.save(commit=False)
                 post.user = request.user
                 post.save()
 
-                return redirect(f"/profile/{pk}")
+                selected_profile_url = reverse('profile', kwargs={'pk':pk})
+                return redirect(selected_profile_url)
 
         context = {
             "profile_pic_form": profile_pic_form,
@@ -208,7 +208,6 @@ def friends(request):
         friends = current_user_profile.friend.exclude(user=request.user)
         sent_fr_list = FriendRequest.objects.filter(sender=request.user)
         received_fr_list = FriendRequest.objects.filter(receiver=request.user)
-        # print(friend_requests)
         context = {
             "sent_fr_list": sent_fr_list,
             "received_fr_list": received_fr_list,
@@ -225,12 +224,8 @@ def friends(request):
 def view_circle_messages(request):
     if request.user.is_authenticated:
         user = request.user
-        circles = Circle.objects.annotate(num_members=Count('members')).filter(num_members__gt=2, members=user)
+        circles = Circle.objects.filter(members=user, type="standard")
         circle_form = CreateCircleForm(request.user)
-
-        print('/*/'*20)
-        for circle in circles:
-            print(circle.members.count())
 
         chat_rooms = dict()
         for circle in circles:
@@ -251,14 +246,11 @@ def view_circle_messages(request):
 def view_friend_messages(request):
     if request.user.is_authenticated:
         user = request.user
-        circles = Circle.objects.annotate(num_members=Count('members')).filter(num_members__lt=3, members=user)
+        circles = Circle.objects.filter(members=user, type='friends')
         circle_form = CreateCircleForm(request.user)
 
-        print('/*/'*20)
-        for circle in circles:
-            print(circle.members.count())
-
-
+        # for member in circle_form.cleaned_data['members']:
+        #     print(member, "::", type(member))
 
         chat_rooms = dict()
         for circle in circles:
@@ -304,26 +296,55 @@ def create_circle(request):
         if request.method == "POST":
             form = CreateCircleForm(request.user, request.POST)
             if form.is_valid():
+
+                profiles = form.cleaned_data["members"]                
+
+                profile_users = [profile.user for profile in profiles] 
+                profile_users.append(request.user)
+                profile_users = set(profile_users)
+
+                circle_objs = Circle.objects.all()
+                
+                for circle_obj in circle_objs:
+                    if profile_users == set(circle_obj.members.all()):
+                        existing_circle_url = reverse('view_convo', kwargs={'room_id':circle_obj.chat_room.id})
+                        return redirect(existing_circle_url)
+
                 circle = form.save(commit=False)
                 circle.save()
-                Message.objects.create(room=circle.chat_room, sender=request.user, content="Welcome to this new Circle of Friends!")
                 circle.members.add(request.user)
-                profiles = form.cleaned_data["members"]
                 for profile in profiles:
-                    circle.members.add(profile.user)
-                circle.save()  # Save the Circle instance after adding members
+                    circle.members.add(profile.user) 
 
-                if not circle.name:
+                if circle.type == 'friends':
+                    circle.name = circle.members.last().username
+                    circle.img = circle.members.last().profile.profile_picture.img
+                elif not circle.name:
                     circle.name = ", ".join(
                         [user.username for user in circle.members.all()]
                     )
-                    circle.save()
 
-                return redirect("friends")
+                circle.save()
+                Message.objects.create(room=circle.chat_room, sender=request.user, content="Welcome to this new Circle of Friends!")
+
+                return redirect('friend_messages') if circle.type == 'friends' else redirect('circle_messages')
+                
         else:
             form = CreateCircleForm(request.user)
 
         return render(request, "friends.html", {"form": form})
+    return redirect("sign_in")
+
+def create_post(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            create_post_form = CreatePostForm(request.POST, request.FILES)
+            if create_post_form.is_valid():
+                post = create_post_form.save(commit=False)
+                post.user = request.user
+                post.save()
+
+        return redirect('home')
     return redirect("sign_in")
 
 
@@ -334,7 +355,6 @@ def send_message(request):
             m_content = request.POST.get("message")
             m_room = ChatRoom.objects.get(id=room_id)
 
-            # print(m_room.circle.name)
             new_message = Message.objects.create(
                 room=m_room, sender=request.user, content=m_content
             )
@@ -347,7 +367,7 @@ def send_message(request):
     return redirect("sign_in")
 
 
-def get_messages(request, room_id):
+def get_messages_asJson(request, room_id):
     if request.user.is_authenticated:
         m_room = ChatRoom.objects.get(id=room_id)
         messages = Message.objects.filter(room=m_room)
@@ -370,13 +390,29 @@ def get_messages(request, room_id):
         return JsonResponse({"messages": serialized_messages})
     return redirect("sign_in")
 
+def get_friends_asJson(request):
+    if request.user.is_authenticated:
+        friends = request.user.profile.friend.all()
+    
+        friends_list = []
+        for friend in friends:
+            friend_item = {
+                "id": friend.id,
+                "username": friend.user.username,
+                "profile_pic_url": friend.profile_picture.img.url,
+            }
+            friends_list.append(friend_item)
+        
+        friends_list = json.dumps(friends_list, cls=DjangoJSONEncoder)
+
+        return JsonResponse({"friends": friends_list})
+    return redirect("sign_in")
+
+
 
 def send_friend_request(request):
     if request.user.is_authenticated:
         if request.method == "POST":
-            print(request.POST)
-
-            # print(request.POST['receiver_user_id'])
 
             fr_form = FriendRequestForm(request.POST)
             if fr_form.is_valid():
@@ -451,10 +487,7 @@ def delete_friend_request(request, fr_id):
 
 def unfriend(request, user_id):
     if request.user.is_authenticated:
-        print(
-            ":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n"
-            * 10
-        )
+        
         sender = Profile.objects.get(user=request.user)
         receiver = Profile.objects.get(id=user_id)
 

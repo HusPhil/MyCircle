@@ -13,11 +13,14 @@ urlpatterns = [
     path('friend_messages', views.view_friend_messages, name='friend_messages'),
 	path('m/<uuid:room_id>', views.view_convo, name='view_convo'),
 	path('m/send_message', views.send_message, name='send_message'),
-	path('create_circle', views.create_circle, name='create_circle'),
-	path('m/get_messages/<uuid:room_id>', views.get_messages, name='get_messages'),
+	path('create_post', views.create_post, name='create_post'),
+    path('create_circle', views.create_circle, name='create_circle'),
 	path('send_friend_request', views.send_friend_request, name='send_friend_request'),
 	path('acpt_fr/<int:fr_id>', views.accept_friend_request, name='accept_friend_request'),
 	path('del_fr/<int:fr_id>', views.delete_friend_request, name='delete_friend_request'),
 	path('un_fr/<uuid:user_id>', views.unfriend, name='unfriend'),
 
+	# //json
+	path('m/get_messages/<uuid:room_id>', views.get_messages_asJson, name='get_messages'),
+    path('friends/asJson', views.get_friends_asJson, name='get_friends_asJson'),
 ]

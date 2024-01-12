@@ -1,19 +1,56 @@
 //create circle form validation
+var checkBoxes = document.querySelectorAll(`input[type="checkbox"][name="${createCircleFrmName}"]`);
 
-document.getElementById('create-circle-frm').addEventListener('submit', function(event) {
-    const checkboxes = document.querySelectorAll(`input[type="checkbox"][name="${createCircleFrmName}"]:checked`);
-    if (checkboxes.length < 2) {
-        event.preventDefault(); 
-        var errorMessage = 
-        '<p style="color: rgb(177, 46, 46);">Please select atleast 2 members.</p>'
-        
-        const errorMessageCont = $('#create-circle-error').empty();
-        console.log(errorMessageCont)
-
-        errorMessageCont.append(errorMessage)
+function getCheckedBoxes(parent) {
+    const parentElement = document.getElementById(parent)
+    if(parentElement){
+        return parentElement.querySelectorAll(`input[type="checkbox"][name="${createCircleFrmName}"]:checked`)
     }
-});
+}
 
+checkBoxes.forEach((checkBox) => {
+    checkBox.addEventListener('click', (e) => {
+        const parentFrmId = 'create-circle-frm-frn'
+        const checkedBoxes = getCheckedBoxes(parentFrmId)
+        const createFrnCircleBtn = document.getElementById('new-circle-msg-btn')
+
+        if(checkedBoxes && checkedBoxes.length == 1) {
+            createFrnCircleBtn.disabled = false
+            checkBoxes.forEach((checkBox) => {
+                checkBox.disabled = true
+            })
+            checkedBoxes[0].disabled = false
+        }
+        else if(checkedBoxes.length == 0) {
+            checkBoxes.forEach((checkBox) => {
+                checkBox.disabled = false
+            })
+        }
+        else {
+            createFrnCircleBtn.disabled = true
+            var errorMessage = 
+            '<p style="color: rgb(177, 46, 46);">Please select only one friend.</p>'
+            
+            const errorMessageCont = $('#create-circle-frn-error').empty();
+            errorMessageCont.append(errorMessage)
+        }
+    })
+})
+
+
+
+if(document.getElementById('create-circle-frm-stn')) {
+    document.getElementById('create-circle-frm-stn').addEventListener('submit', function(event) {
+        if (getCheckedBoxes('create-circle-frm-stn').length < 2) {
+            event.preventDefault(); 
+            var errorMessage = 
+            '<p style="color: rgb(177, 46, 46);">Please select atleast 2 members.</p>'
+            
+            const errorMessageCont = $('#create-circle-stn-error').empty();
+            errorMessageCont.append(errorMessage)
+        }
+    });
+}
 
 
 // Function to check the message input and perform related actions
@@ -89,7 +126,7 @@ function messageAppended(messages) {
 
         const messageBody =
             `<div class="message-item ${messageBodyClass}">
-                <img src="${message.sender_pic_url}" alt="sender-pic" class="sender-pic ${senderPicClass}">
+                <img src="${message.sender_pic_url}" alt="sender-pic" class="profile-pic-icon ${senderPicClass}">
                 <div class="message-body">
                     <p class="sender-info">@${message.sender}</p>
                     <p class="message-content">${formattedContent}</p>
@@ -152,5 +189,40 @@ $(document).ready(function () {
     }
 });
 
+//Search users by username
+const searchByAtrrInputs = document.querySelectorAll('.search-by-attr')
+
+fetch(getFriendsAsJsonUrl)
+    .then(res => res.json())
+    .then(data => {
+        var friends_data = JSON.parse(data.friends)
+        displayFriendsList(friends_data)
+    })
+    .catch(error => console.error('Error:', error));
+
+function displayFriendsList(friends) {
+    friends.forEach((friend) => {
+        
+    })
+}
+
+searchByAtrrInputs.forEach((searchInput) => {
+    searchInput.addEventListener('keyup', (e) => {
+        let searchValue = e.target.value
+        const profileListItems = document.querySelectorAll('.profile-option-item')
+        profileListItems.forEach((profile) => {
+            const p_child = profile.querySelector('p')
+            
+            profile.style.display = 'none'
+           
+            if(p_child.getAttribute('test-name').toLowerCase().includes(searchValue.toLowerCase())){
+                profile.style.display = 'flex'
+            }
+            
+        })
+        
+
+    })
+}) 
 
 

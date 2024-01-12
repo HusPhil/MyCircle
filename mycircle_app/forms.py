@@ -24,7 +24,7 @@ class CreatePostForm(forms.ModelForm):
 class CreateCircleForm(forms.ModelForm):
     class Meta:
         model = Circle
-        fields = ['name', 'members']
+        fields = ['name', 'members', 'type']
 
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
