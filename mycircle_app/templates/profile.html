@@ -130,6 +130,7 @@
     <div class="carousel-container">
         
         {% for circle in circles %}
+        {% if circle.type == 'standard' %}
         <div class="carousel-slide">
             <a href="{% url 'view_convo' circle.chat_room.id %}">
             <div class="circles-item">
@@ -140,7 +141,8 @@
             </div>
          </a>
          </div>
-         {% endfor %}
+         {% endif %}
+        {% endfor %}
          
         </div>
     </div>

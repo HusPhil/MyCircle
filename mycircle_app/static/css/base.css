@@ -1,6 +1,7 @@
 :root{
     --accent-color: #009637;
     --secondary-color: #FAF4D3;
+    --secondary-color-fade: #faf4d34e;
     --primary-color: #010019; 
 
     --bg-main: #010019;
@@ -34,13 +35,6 @@ html {
     max-height: 90vh;
 }
 
-/* .flex-cont-col {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-} */
 
 * {
     font-family: 'Varela Round', sans-serif;
@@ -51,10 +45,25 @@ html {
 }
 
 .side-content {
+    margin-top: 20px;
     border-left: 1px solid var(--secondary-color);
     border-right: 1px solid var(--secondary-color);
     border-radius: 20px;
-    height: 100%;
+    max-height: 100vh;
+}
+
+.main-cont {
+    margin-top: 20px;
+    max-height: 90vh;
+    overflow: auto;
+}
+
+.stn-btn {
+    border: none;
+    color: var(--fnt-main-color);
+    background-color: var(--accent-color);
+    border-radius: 15px;
+    padding: 4px 15px;
 }
 
 .util-cont-100 {
@@ -501,7 +510,7 @@ a {
     background-color: var(--accent-color);
 }
 
-.search-by-attr {
+.stn-input-100 {
     background-color: var(--secondary-color);
     color: var(--input-field-color);
     outline: none;

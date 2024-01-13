@@ -409,6 +409,21 @@ def get_friends_asJson(request):
     return redirect("sign_in")
 
 
+def save_circle_settings(request):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            room_id = request.POST.get('room_id')
+            room = ChatRoom.objects.get(id=room_id)
+            circle = Circle.objects.get(chat_room=room)
+            circle.img = request.FILES.get('circle_img')
+            circle.save()
+            print(request.POST, "::", room, "::", circle,"::", request.FILES.get('circle_img'))
+            selected_convo_url = reverse('view_convo', kwargs={'room_id':room_id})
+            return redirect(selected_convo_url)
+
+
+        
+    return redirect("sign_in")
 
 def send_friend_request(request):
     if request.user.is_authenticated:

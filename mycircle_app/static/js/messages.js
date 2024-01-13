@@ -1,3 +1,57 @@
+const csrf = document.getElementsByName('csrfmiddlewaretoken')
+
+//IMAGE CROPPER for Changing Circle Picture
+function imageCropper(
+    selectedImgBox, saveChangesBtn, fileInput, 
+    receiverForm, picContainer, 
+    frmSubmitBtn, inputRoomID, inputCircleName) {
+    fileInput.addEventListener('change', () => {
+        saveChangesBtn.disabled = false;
+    
+        const img_data = fileInput.files[fileInput.files.length - 1];
+        const url = URL.createObjectURL(img_data);
+        selectedImgBox.innerHTML = `<img src="${url}" id="profile-pic-imgfile" width="250px">`;
+    
+        var $profile_pic = $('#profile-pic-imgfile');
+        $profile_pic.cropper({
+            aspectRatio: 1 / 1,
+        });
+    
+        var cropper = $profile_pic.data('cropper');
+    
+        saveChangesBtn.addEventListener('click', () => {
+            cropper.getCroppedCanvas().toBlob((blob) => {                
+                const fd = new FormData();
+                fd.append('csrfmiddlewaretoken', csrf[0].value);
+                fd.append('circle_img', blob, 'circle_picture.png');
+                fd.append(inputRoomID.name, inputRoomID.value);
+                fd.append(inputCircleName.name, inputCircleName.value);
+                // imgDataCont.value = fd.get('img')
+
+                const blobUrl = URL.createObjectURL(blob);
+                picContainer.src = blobUrl
+
+                frmSubmitBtn.addEventListener('click', (e) => {
+                    console.log('submitted')
+                    $.ajax({
+                        type:'POST',
+                        url: receiverForm.action,
+                        enctype: 'multipart/form-data',
+                        data: fd,
+                        success: window.location.reload(),
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                    })
+                })
+                
+            });
+        });
+    });
+}
+
+
+
 //create circle form validation
 var checkBoxes = document.querySelectorAll(`input[type="checkbox"][name="${createCircleFrmName}"]`);
 
@@ -224,5 +278,66 @@ searchByAtrrInputs.forEach((searchInput) => {
 
     })
 }) 
+
+//change current circle pic
+const currentCirclePicCont = document.getElementById('current-circle-pic')
+const circleSettingsFrm = document.getElementById('circle-settings-frm')
+const submitBtn = document.getElementById('save-circle-settings')
+
+// function changeCurrentCirclePic(new_src) {
+//     currentCirclePicCont.src = new_src
+//     // console.log(currentCirclePicCont)
+// }
+
+// chooseNewCirclePicInputTypeFile.addEventListener('click', (e) => {
+//     e.preventDefault()
+    
+//     changeCurrentCirclePic(e.target.files[0])
+
+//     const reader = new FileReader();
+
+    
+//     reader.onload = function () {
+//         currentCirclePicCont.src = reader.result
+//     };
+
+//     reader.readAsDataURL(e.target.files[0])
+//     console.log(reader.readAsDataURL(e.target.files[0]))
+// })
+
+const chosenCirclePicBox = document.getElementById('chosen-circle-img-box');
+const circlePicChangeSaveBtn = document.getElementById('circle-pic-save-changes-btn');
+const circlePicInputFile = document.getElementById('choose-circle-pic-btn');
+const circleChRoomId = document.getElementById('circle-room-id')
+const circleName = document.getElementById('setting-circle-name')
+
+imageCropper(
+    chosenCirclePicBox, circlePicChangeSaveBtn, 
+    circlePicInputFile, circleSettingsFrm, 
+    currentCirclePicCont, submitBtn, 
+    circleChRoomId, circleName)
+
+
+
+
+
+
+
+// function previewImage(event) {
+//     const imagePreview = document.getElementById('imagePreview');
+//     const create_post_btn = document.getElementById('create_post_btn');
+//     imagePreview.style.display = "block"
+//     const file = event.target.files[0];
+//     const reader = new FileReader();
+
+//     reader.onload = function () {
+//         imagePreview.src = reader.result;
+//     };
+
+//     if (file) {
+//         reader.readAsDataURL(file);
+//         create_post_btn.disabled = false;
+//     }
+// }
 
 

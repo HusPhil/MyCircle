@@ -9,10 +9,6 @@ urlpatterns = [
 
 	path('profile/<uuid:pk>', views.profile, name='profile'),
 	path('friends', views.friends, name='friends'),
-	path('circle_messages', views.view_circle_messages, name='circle_messages'),
-    path('friend_messages', views.view_friend_messages, name='friend_messages'),
-	path('m/<uuid:room_id>', views.view_convo, name='view_convo'),
-	path('m/send_message', views.send_message, name='send_message'),
 	path('create_post', views.create_post, name='create_post'),
     path('create_circle', views.create_circle, name='create_circle'),
 	path('send_friend_request', views.send_friend_request, name='send_friend_request'),
@@ -20,6 +16,12 @@ urlpatterns = [
 	path('del_fr/<int:fr_id>', views.delete_friend_request, name='delete_friend_request'),
 	path('un_fr/<uuid:user_id>', views.unfriend, name='unfriend'),
 
+	path('m/<uuid:room_id>', views.view_convo, name='view_convo'),
+	path('m/send_message', views.send_message, name='send_message'),
+	path('m/circle_messages', views.view_circle_messages, name='circle_messages'),
+    path('m/friend_messages', views.view_friend_messages, name='friend_messages'),
+    path('c/settings', views.save_circle_settings, name='save_circle_settings'),
+	
 	# //json
 	path('m/get_messages/<uuid:room_id>', views.get_messages_asJson, name='get_messages'),
     path('friends/asJson', views.get_friends_asJson, name='get_friends_asJson'),

@@ -31,7 +31,11 @@
 					<img src="{{chatroom.circle.img.url}}" alt="Circle Image">
 				</div>
 				<div class="msg-info">
-					<h5>{{chatroom.circle.name}}</h5>
+					{% if not chatroom.name %}
+					<h5>{{chatroom.circle.name}} </h5>
+					{% else %}
+					<h5>{{chatroom.name}} </h5>
+					{% endif %}
 					<p><strong>{{ latest_message.sender }}:</strong> {{ latest_message.content }}</p>
 					<p>{{ latest_message.timestamp }}</p>
 				</div>
@@ -64,11 +68,17 @@
 
 		{% elif request.resolver_match.url_name == 'view_convo' %}
 
+		
+
 		<div class="convo-header">
 			<a href="{% if room.circle.type == 'standard' %} {% url 'circle_messages' %} {% else %} {% url 'friend_messages' %} {% endif %}"><button>
 				<img class="back-icon" src="{% static 'icons/back-icon.png' %}" alt="BACK">
 			</button></a>
-			<h2>{{room.circle.name}}</h2>
+				{% if not room.name %}
+				<h2>{{room.circle.name}} </h2>
+				{% else %}
+				<h2>{{room.name}} </h2>
+				{% endif %}
 			<a href="{% url 'circle_messages' %}"><button>
 				<img class="chat-settings-icon" src="{% static 'icons/chat-settings.png' %}" alt="SETTINGS">
 			</button></a>
@@ -92,6 +102,9 @@
 		</form>
 		{% endif %}
 		<hr> 
+
+		
+
 		{% endif %}
  		</div>
 	<br><br>
@@ -119,7 +132,7 @@
 							
 							<h5>Choose Members:</h5>
 							<div class="choose-friend-cont">
-							<input type="text" class="search-by-attr" placeholder="Search username">
+							<input type="text" class="stn-input-100 search-by-attr" placeholder="Search username">
 							{% for member in circle_form.members.field.queryset %}
 							<label class="profile-option-item">
 								<div style="display: flex; align-items: center;">
@@ -158,7 +171,7 @@
 							
 							<h5>Choose a Friend:</h5>
 							<div class="choose-friend-cont">
-							<input type="text" class="search-by-attr" placeholder="Search username">
+							<input type="text" class="stn-input-100 search-by-attr" placeholder="Search username">
 							{% for member in circle_form.members.field.queryset %}
 							<label class="profile-option-item">
 								<div style="display: flex; align-items: center;">
@@ -166,7 +179,7 @@
 									<p style="margin: 0; margin-left: 10px;" test-name="{{ member.user.username }}">{{ member.user.username }}</p>
 								</div>
 								<input type="checkbox" name="{{circle_form.members.name}}" value="{{ member.id }}" />
-							</label>
+							</label> 
 							{% endfor %}
 							</div>
 							<br><br>
@@ -179,18 +192,87 @@
 			</div>
 		</div>
 	</div>
+	{% elif request.resolver_match.url_name == 'view_convo' %}
+
+	<!-- Modal (Choose Circle Pic) -->
+	<div class="modal fade" id="change_circle_pic" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content item ">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="exampleModalLabel">Changing your Profile Picture</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body ">
+					<!-- CHANGING-PHOTO GUI -->
+					<!-- <form id="frm-change-background-pic">
+						{% csrf_token %}
+						<div class="choose-photo-cont">
+							<label for="choose-background-pic-btn" class="hover-item">
+								<p>Select a Background Picture</p>
+							</label>
+						</div>
+					</form> -->
+					<!-- <div id="bg-alert-box"></div> -->
+					<label for="choose-circle-pic-btn" class="hover-item">Choose Circle</label>
+					<input type="file" id="choose-circle-pic-btn" class="display-hidden">
+					<div class="img-area-cont">
+						<div class="image-area mb-3" id="chosen-circle-img-box"></div>
+					</div>
+					<button data-bs-dismiss="modal" class="btn btn-primary mt-3" id="circle-pic-save-changes-btn" disabled>Crop Image</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	{% endif %}
 
-
-
-
-<script>
+	
+	
+	<script>
 	var current_user = '{{request.user.username}}';
 	var createCircleFrmName = '{{circle_form.members.name}}';
 	var currentUrl = '{{request.resolver_match.url_name}}'
 	var getFriendsAsJsonUrl = "{% url 'get_friends_asJson' %}"
 </script>
 
+{% endblock %}
 
 
+
+{% block navbar_right %} 
+		{% if request.resolver_match.url_name == 'view_convo' %}
+
+
+		<div class="circle-settings-cont">
+			<h3>CIRCLE SETTINGS: {{room.id}}</h3>
+			
+			<div class="settings-circle-info">
+				<form action="{% url 'save_circle_settings' %}" enctype="multipart/form-data" method="post" id="circle-settings-frm">
+					{% csrf_token %}
+					<img id="current-circle-pic" src="../../media/blank_img.png" alt="">
+					<button class="stn-btn" id="choose-new-circle-pic" data-bs-target="#change_circle_pic" type="button"  data-bs-toggle="modal">Change Photo</button>
+
+					<input type="hidden" value="{{ room.id }}" name="room_id" id="circle-room-id">
+					<label for="setting-circle-name">Circle name:</label>
+					<input style="text-align: center;" type="text" class="stn-input-100" value="Everybody Agrees" id="setting-circle-name" name="circle_name">
+					
+					<button type="button" class="stn-btn" id="save-circle-settings">Save Changes</button>
+				</form>
+			</div>
+
+			<div class="settings-circle-options">
+				<button class="circle-option" href="" data-bs-target="#create_circle_modal">
+					<p>Add Member</p>
+				</button>
+				<button class="circle-option" href="">
+					<p>Leave Circle</p>
+				</button>
+				
+				<button class="circle-option" href="">
+					<p>Delete Circle</p>
+				</button>
+			</div>
+		</div>
+
+		{%endif%}
 {% endblock %}

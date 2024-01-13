@@ -25,6 +25,8 @@ choose_background_pic_btn.addEventListener('change', ()=>{
             fd.append('csrfmiddlewaretoken', csrf[0].value)
             fd.append('img', blob, 'background_img.png');
 
+
+
             $.ajax({
                 type:'POST',
                 url: frm_change_background_pic.action,
@@ -147,4 +149,58 @@ function checkInputs() {
             create_post_btn.disabled = true;
         }
     }
+}
+
+
+
+
+
+
+function imageCropper(alertBox, selectedImgBox, saveChangesBtn, frmReceiver, fileInput) {
+    fileInput.addEventListener('change', () => {
+        alertBox.innerHTML = '';
+        saveChangesBtn.disabled = false;
+    
+        const img_data = fileInput.files[0];
+        const url = URL.createObjectURL(img_data);
+        selectedImgBox.innerHTML = `<img src="${url}" id="profile-pic-imgfile" width="250px">`;
+    
+        var $profile_pic = $('#profile-pic-imgfile');
+        $profile_pic.cropper({
+            aspectRatio: 1 / 1,
+        });
+    
+        var cropper = $profile_pic.data('cropper');
+    
+        saveChangesBtn.addEventListener('click', () => {
+            cropper.getCroppedCanvas().toBlob((blob) => {
+                const fd = new FormData();
+                fd.append('csrfmiddlewaretoken', csrf[0].value);
+                fd.append('img', blob, 'profile_img.png');
+    
+                $.ajax({
+                    type: 'POST',
+                    url: frmReceiver.action,
+                    enctype: 'multipart/form-data',
+                    data: fd,
+                    success: function (response) {
+                        console.log('success', response);
+                        window.location.reload();
+                        alertBox.innerHTML = `<div class="alert alert-success" role="alert">
+                                                    Successfully saved and cropped the selected image!
+                                                </div>`;
+                    },
+                    error: function (error) {
+                        console.log('error', error);
+                        alertBox.innerHTML = `<div class="alert alert-danger" role="alert">
+                                                    Something went wrong..
+                                                </div>`;
+                    },
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                });
+            });
+        });
+    });
 }

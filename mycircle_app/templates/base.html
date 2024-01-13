@@ -45,11 +45,13 @@
             {% include 'nav-bar.html' %}
             {% block content %} {% endblock %}
           </div>
+          <div class="main-cont">
+          </div>
         </div>
-
+        
         <div class="col-md-3 ">
           <div class="side-content" >
-            asdasdsa
+            {% block navbar_right %} {% endblock %}
           </div>
         </div>
       </div> 
